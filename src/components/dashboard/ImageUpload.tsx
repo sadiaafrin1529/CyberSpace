@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useCallback } from "react";
+import { useUploadImageMutation } from "@/redux/fetchers/upload/uploadApi";
 
 interface ImageUploadProps {
   value: string;
@@ -24,7 +25,7 @@ export default function ImageUpload({
   showUrlInput = true,
 }: ImageUploadProps) {
   const fileRef = useRef<HTMLInputElement>(null);
-  const [uploading, setUploading] = useState(false);
+  const [uploadImage, { isLoading: uploading }] = useUploadImageMutation();
   const [uploadError, setUploadError] = useState("");
   const [isDragging, setIsDragging] = useState(false);
 
@@ -39,13 +40,11 @@ export default function ImageUpload({
       setUploadError("Unsupported format — use JPG, PNG, WebP or GIF");
       return;
     }
-    setUploading(true);
     setUploadError("");
     try {
       const fd = new FormData();
       fd.append("image", file);
-      const res = await fetch("/api/upload/image", { method: "POST", body: fd });
-      const data = await res.json();
+      const data = await uploadImage(fd).unwrap();
       if (data?.data?.imageUrl) {
         onChange(data.data.imageUrl);
       } else {
@@ -53,8 +52,6 @@ export default function ImageUpload({
       }
     } catch {
       setUploadError("Network error during upload");
-    } finally {
-      setUploading(false);
     }
   }
 

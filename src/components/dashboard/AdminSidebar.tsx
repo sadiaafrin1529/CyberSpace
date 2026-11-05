@@ -6,7 +6,7 @@ import { useState } from "react";
 import {
   LayoutDashboard, Package, Layers, MessageSquare, Users,
   Handshake, Newspaper, Settings, Lock, Globe, LogOut,
-  Menu, X,
+  Menu, X, Briefcase,
 } from "lucide-react";
 import type { Dict } from "@/lib/i18n";
 import type { JwtUser } from "@/lib/server-auth";
@@ -38,6 +38,7 @@ export default function AdminSidebar({ lang, t, user }: Props) {
     { href: `${base}/users`, label: t.dash.users, icon: <Users size={17} /> },
     { href: `${base}/partners`, label: t.dash.partners ?? "Partners", icon: <Handshake size={17} /> },
     { href: `${base}/news`, label: t.dash.news ?? "News", icon: <Newspaper size={17} /> },
+    { href: `${base}/careers`, label: t.dash.careers ?? "Careers", icon: <Briefcase size={17} /> },
     { href: `${base}/settings`, label: t.dash.settings, icon: <Settings size={17} /> },
     { href: `${base}/change-password`, label: t.dash.changePassword, icon: <Lock size={17} /> },
   ];

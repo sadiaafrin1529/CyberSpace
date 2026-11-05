@@ -10,6 +10,7 @@ import {
   type CreatePartnerInput,
 } from "@/redux/fetchers/partner/partnerApi";
 import ImageUpload from "@/components/dashboard/ImageUpload";
+import SkeletonTableRows from "@/components/dashboard/SkeletonTableRows";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Handshake } from "lucide-react";
@@ -144,7 +145,23 @@ export default function PartnersClient({ t }: { t: Dict }) {
       </div>
 
       {isLoading ? (
-        <p className="muted">{t.common.loading}</p>
+        <div className="dash-table-wrap">
+          <table className="dash-table">
+            <thead>
+              <tr>
+                <th>Logo</th>
+                <th>{t.dash.name}</th>
+                <th>Website</th>
+                <th>{t.dash.formOrder ?? "Order"}</th>
+                <th>{t.dash.formActive ?? "Active"}</th>
+                <th>{t.dash.actions}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <SkeletonTableRows columns={["thumb", "text", "text", "sm", "badge", "badge"]} />
+            </tbody>
+          </table>
+        </div>
       ) : partners.length === 0 ? (
         <div className="dash-empty">
           <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" style={{ opacity: 0.3 }}><path d="M17 20h5v-2a3 3 0 0 0-5.356-1.857"/><path d="M9 20H4v-2a3 3 0 0 1 5.356-1.857"/><circle cx="12" cy="7" r="4"/></svg>

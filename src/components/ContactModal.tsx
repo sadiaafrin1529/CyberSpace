@@ -19,7 +19,7 @@ export default function ContactModal() {
   const { data: products = [] } = useGetProductsQuery();
   const product = products.find((p) => p.id === productId) ?? null;
 
-  const [submitInquiry, { isLoading, isSuccess, isError, error, reset }] = useSubmitInquiryMutation();
+  const [submitInquiry, { isLoading }] = useSubmitInquiryMutation();
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -27,26 +27,22 @@ export default function ContactModal() {
   const [human, setHuman] = useState(false);
   const [trap, setTrap] = useState("");
   const [errors, setErrors] = useState<{ name?: string; phone?: string; spam?: string }>({});
+  const [errMsg, setErrMsg] = useState<string | null>(null);
   const nameRef = useRef<HTMLInputElement>(null);
+  const submittingRef = useRef(false);
 
   useEffect(() => {
     if (!productId) return;
     setErrors({});
+    setErrMsg(null);
     setName(""); setPhone(""); setMessage(""); setHuman(false); setTrap("");
-    reset();
+    submittingRef.current = false;
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") dispatch(closeInquiry()); };
     document.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
     nameRef.current?.focus();
     return () => { document.removeEventListener("keydown", onKey); document.body.style.overflow = ""; };
-  }, [productId, dispatch, reset]);
-
-  useEffect(() => {
-    if (isSuccess) {
-      dispatch(closeInquiry());
-      toast.success(t.inquiry.success, t.inquiry.note);
-    }
-  }, [isSuccess, dispatch, t]);
+  }, [productId, dispatch]);
 
   if (!productId || !product) return null;
 
@@ -54,6 +50,8 @@ export default function ContactModal() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submittingRef.current) return;
+
     const next: typeof errors = {};
     if (name.trim().length < 2) next.name = t.inquiry.errName;
     if (!PHONE_OK(phone.trim())) next.phone = t.inquiry.errPhone;
@@ -61,18 +59,32 @@ export default function ContactModal() {
     setErrors(next);
     if (Object.keys(next).length) return;
 
-    await submitInquiry({
-      productId: product.id,
-      name: name.trim(),
-      phone: phone.trim(),
-      message: message.trim() || undefined,
-    });
+    submittingRef.current = true;
+    setErrMsg(null);
+    try {
+      const result = await submitInquiry({
+        productId: product.id,
+        name: name.trim(),
+        phone: phone.trim(),
+        message: message.trim() || undefined,
+      }).unwrap();
+
+      // A 2xx HTTP response is not proof of business success — check the envelope.
+      if (result?.success === false) {
+        throw { data: result };
+      }
+
+      dispatch(closeInquiry());
+      toast.success(t.inquiry.success, t.inquiry.note);
+    } catch (err: unknown) {
+      const msg = (err as { data?: { message?: string } })?.data?.message ?? t.inquiry.errGeneral;
+      setErrMsg(msg);
+      toast.error(msg);
+      submittingRef.current = false;
+    }
   };
 
   const busy = isLoading;
-  const errMsg = isError
-    ? ((error as { data?: { message?: string } })?.data?.message ?? t.inquiry.errGeneral)
-    : null;
 
   return (
     <div className="modal" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) close(); }}>

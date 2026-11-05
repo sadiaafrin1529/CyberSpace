@@ -38,9 +38,27 @@ export default function ProductDetail({ slug }: { slug: string }) {
   }, [rawProduct, settings]);
 
   if (!product) {
+    if (isLoading) {
+      return (
+        <div className="container section">
+          <div className="detail">
+            <div className="detail__media">
+              <span className="skel" style={{ display: "block", height: 300, borderRadius: 0 }} />
+            </div>
+            <div className="detail__info" style={{ width: "100%" }}>
+              <span className="skel skel--badge" />
+              <span className="skel skel--xl" style={{ width: "80%" }} />
+              <span className="skel skel--md" style={{ width: "50%" }} />
+              <span className="skel skel--lg" style={{ width: 140 }} />
+              <span className="skel skel--xl" style={{ width: 180, borderRadius: "var(--radius)" }} />
+            </div>
+          </div>
+        </div>
+      );
+    }
     return (
       <div className="container section">
-        <p className="muted">{isLoading ? t.common.loading : t.product.notFound}</p>
+        <p className="muted">{t.product.notFound}</p>
         <Link href={`/${lang}/shop`} className="btn btn--ghost">{t.product.back}</Link>
       </div>
     );

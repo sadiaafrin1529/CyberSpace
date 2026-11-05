@@ -8,6 +8,7 @@ import { getDict, isLocale } from "@/lib/i18n";
 import { pageMeta } from "@/lib/seo";
 import { BACKEND_URL } from "@/lib/server-auth";
 import { FadeDown, FadeLeft, FadeRight, FadeUp, ZoomIn } from "@/components/Motion";
+import PartnerCard from "@/components/PartnerCard";
 import heroSvg from "@/assets/animated-ai-hero.svg";
 
 type DbCategory = { id: number; slug: string; nameEN: string; nameAZ: string; nameRU: string; imageUrl: string | null; isActive: boolean; order: number };
@@ -367,27 +368,25 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
 
       {/* ── Partners ── */}
       {partners.length > 0 && (
-        <section className="container section">
-          <FadeUp className="section__head">
-            <h2>{h.partnersTitle}</h2>
-            <Link href={`/${lang}/partners`} className="more">{t.common.viewAll} →</Link>
-          </FadeUp>
-          <FadeUp delay={0.1}>
-            <ul className="partners">
-              {partners.map((p, i) => {
-                const inner = p.logoUrl
-                  ? <img src={p.logoUrl} alt={p.name} loading="lazy" />
-                  : <span className="partners__name">{p.name}</span>;
-                return (
-                  <li key={p.id} className="partners__item" style={{ transitionDelay: `${Math.min(i * 0.04, 0.3)}s` }}>
-                    {p.websiteUrl
-                      ? <a className="partners__link" href={p.websiteUrl} target="_blank" rel="noreferrer" aria-label={p.name}>{inner}</a>
-                      : <div className="partners__link">{inner}</div>}
-                  </li>
-                );
-              })}
-            </ul>
-          </FadeUp>
+        <section className="partners-section">
+          <div className="container">
+            <FadeUp className="cats-head">
+              <div>
+                <p className="eyebrow cats-eyebrow">
+                  {{ en: "Authorised reseller", az: "Səlahiyyətli distribütor", ru: "Авторизованный реселлер" }[L]}
+                </p>
+                <h2 className="cats-title">{h.partnersTitle}</h2>
+              </div>
+              <Link href={`/${lang}/partners`} className="cats-viewall">{t.common.viewAll} →</Link>
+            </FadeUp>
+            <div className="partner-grid">
+              {partners.map((p, i) => (
+                <FadeUp key={p.id} delay={(i % 5) * 0.05}>
+                  <PartnerCard partner={p} />
+                </FadeUp>
+              ))}
+            </div>
+          </div>
         </section>
       )}
 

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "@/lib/toast";
 
-type ToastItem = { id: number; msg: string; type: "success" | "error" | "info"; sub?: string; exiting?: boolean };
+type ToastItem = { id: number; msg: string; type: "success" | "error" | "info" | "warning"; sub?: string; exiting?: boolean };
 
 export default function Toaster() {
   const [items, setItems] = useState<ToastItem[]>([]);
@@ -39,6 +39,11 @@ export default function Toaster() {
             {item.type === "info" && (
               <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
                 <circle cx="12" cy="12" r="10" /><path d="M12 16v-4M12 8h.01" />
+              </svg>
+            )}
+            {item.type === "warning" && (
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 9v4M12 17h.01M10.3 3.9 2.5 17a1.5 1.5 0 0 0 1.3 2.25h16.4A1.5 1.5 0 0 0 21.5 17L13.7 3.9a1.5 1.5 0 0 0-2.6 0Z" />
               </svg>
             )}
           </span>

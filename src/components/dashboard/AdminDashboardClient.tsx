@@ -8,6 +8,7 @@ import { useGetProductsQuery } from "@/redux/fetchers/product/productApi";
 import { useGetAllUsersQuery } from "@/redux/fetchers/user/userApi";
 import { useGetCategoriesQuery } from "@/redux/fetchers/category/categoryApi";
 import { useMeQuery } from "@/redux/fetchers/auth/authApi";
+import SkeletonTableRows from "@/components/dashboard/SkeletonTableRows";
 
 interface Props {
   lang: string;
@@ -37,8 +38,43 @@ export default function AdminDashboardClient({ lang, t, base }: Props) {
 
   if (isLoading) {
     return (
-      <div className="dash-loading">
-        <p className="muted">Loading...</p>
+      <div>
+        <div className="dash-page-header">
+          <div>
+            <span className="skel skel--xl" style={{ width: 220, marginBottom: 8, display: "block" }} />
+            <span className="skel skel--sm" style={{ width: 140, display: "block" }} />
+          </div>
+        </div>
+        <div className="stat-grid">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="stat-card">
+              <span className="skel skel--avatar" />
+              <div className="stat-card__body">
+                <span className="skel skel--sm" style={{ width: 90, marginBottom: 6, display: "block" }} />
+                <span className="skel skel--lg" style={{ width: 40, display: "block" }} />
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="dash-section">
+          <div className="dash-section__head">
+            <h2 className="dash-section__title">{t.dash.recentInquiries}</h2>
+          </div>
+          <div className="dash-table-wrap">
+            <table className="dash-table">
+              <thead>
+                <tr>
+                  <th>{t.dash.product}</th>
+                  <th>{t.dash.customer}</th>
+                  <th>{t.dash.phone}</th>
+                  <th>{t.dash.date}</th>
+                  <th>{t.dash.status}</th>
+                </tr>
+              </thead>
+              <tbody><SkeletonTableRows columns={["text", "text", "text", "sm", "badge"]} /></tbody>
+            </table>
+          </div>
+        </div>
       </div>
     );
   }

@@ -10,6 +10,7 @@ import { useGetCategoriesQuery } from "@/redux/fetchers/category/categoryApi";
 import { useAppDispatch } from "@/redux/store";
 import { openInquiry } from "@/redux/inquirySlice";
 import ProductCard from "./ProductCard";
+import { ProductGridSkeleton } from "./ProductCardSkeleton";
 import { FadeUp } from "./Motion";
 
 type SortKey = "relevance" | "nameAsc" | "priceAsc" | "priceDesc";
@@ -247,7 +248,7 @@ export default function ShopClient() {
           </div>
 
           {isLoading ? (
-            <p className="muted">{t.common.loading}</p>
+            <ProductGridSkeleton />
           ) : filtered.length === 0 ? (
             <div className="empty">
               <svg viewBox="0 0 48 48" width="48" height="48" fill="none" aria-hidden="true">

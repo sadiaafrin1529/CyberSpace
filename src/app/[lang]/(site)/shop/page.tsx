@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import ShopClient from "@/components/ShopClient";
+import { ProductGridSkeleton } from "@/components/ProductCardSkeleton";
 import { getDict, isLocale } from "@/lib/i18n";
 import { pageMeta } from "@/lib/seo";
 import { FadeDown, FadeUp } from "@/components/Motion";
@@ -29,7 +30,7 @@ export default async function ShopPage({ params }: { params: Promise<{ lang: str
           <FadeUp delay={0.06}><p>{t.shop.subtitle}</p></FadeUp>
         </div>
       </section>
-      <Suspense fallback={<p className="container muted section">{t.common.loading}</p>}>
+      <Suspense fallback={<div className="container section"><ProductGridSkeleton /></div>}>
         <ShopClient />
       </Suspense>
     </>

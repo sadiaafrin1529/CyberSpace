@@ -5,10 +5,11 @@ import { getDict, isLocale, type Locale } from "@/lib/i18n";
 import { pageMeta } from "@/lib/seo";
 import { BACKEND_URL } from "@/lib/server-auth";
 import { FadeDown, FadeLeft, FadeRight, FadeUp, ZoomIn } from "@/components/Motion";
+import PartnerCard from "@/components/PartnerCard";
 
 export const dynamic = "force-dynamic";
 
-const PAGES = ["about", "solutions", "partners", "careers", "contact"] as const;
+const PAGES = ["about", "solutions", "partners", "contact"] as const;
 type PageKey = (typeof PAGES)[number];
 
 const MIGRATE: Record<Locale, string> = {
@@ -183,64 +184,6 @@ const INDUSTRIES = [
   { icon: "🎓", name: { en: "Education",          az: "Təhsil",         ru: "Образование" } },
   { icon: "📡", name: { en: "Telecom",            az: "Telekommunikasiya", ru: "Телеком" } },
   { icon: "🏗️", name: { en: "Construction",       az: "İnşaat",         ru: "Строительство" } },
-];
-
-const PARTNER_TIERS: Record<string, { tier: { en: string; az: string; ru: string }; level: "gold" | "silver" | "auth" }> = {
-  "Dell Technologies": { tier: { en: "Gold Partner",      az: "Gold Tərəfdaş",     ru: "Золотой партнёр" },    level: "gold" },
-  "HPE":               { tier: { en: "Platinum Partner",  az: "Platinum Tərəfdaş", ru: "Платиновый партнёр" }, level: "gold" },
-  "Cisco":             { tier: { en: "Premier Partner",   az: "Premier Tərəfdaş",  ru: "Премьер-партнёр" },   level: "gold" },
-  "Fortinet":          { tier: { en: "Gold Partner",      az: "Gold Tərəfdaş",     ru: "Золотой партнёр" },    level: "gold" },
-  "Microsoft":         { tier: { en: "Gold Partner",      az: "Gold Tərəfdaş",     ru: "Золотой партнёr" },    level: "gold" },
-  "Lenovo":            { tier: { en: "Authorized",        az: "Səlahiyyətli",      ru: "Авторизованный" },    level: "auth" },
-  "HP Inc.":           { tier: { en: "Authorized",        az: "Səlahiyyətli",      ru: "Авторизованный" },    level: "auth" },
-  "Axis Comm.":        { tier: { en: "Authorized",        az: "Səlahiyyətli",      ru: "Авторизованный" },    level: "silver" },
-  "APC":               { tier: { en: "Silver Partner",    az: "Silver Tərəfdaş",   ru: "Серебряный партнёр" }, level: "silver" },
-  "Logitech":          { tier: { en: "Authorized",        az: "Səlahiyyətli",      ru: "Авторизованный" },    level: "auth" },
-};
-
-const CAREERS_BENEFITS = [
-  { icon: "💰", title: { en: "Competitive Compensation",  az: "Rəqabətli Əmək haqqı",       ru: "Конкурентная зарплата" }, desc: { en: "Salary + performance bonuses tied to your results.", az: "Nəticələrinizə bağlı maaş + performans bonusları.", ru: "Зарплата + премии по результатам работы." } },
-  { icon: "📜", title: { en: "Vendor Certifications",     az: "Satıcı Sertifikatları",       ru: "Сертификаты вендоров" }, desc: { en: "Company-sponsored training and certification exams.", az: "Şirkətin maliyyələşdirdiyi təlim və sertifikat imtahanları.", ru: "Обучение и сертификационные экзамены за счёт компании." } },
-  { icon: "🚀", title: { en: "Career Growth",            az: "Karyera İnkişafı",             ru: "Карьерный рост" }, desc: { en: "Clear paths from engineer to architect or team lead.", az: "Mühəndisdən memar və ya komanda rəhbərinə aydın yollar.", ru: "Чёткий карьерный путь от инженера до архитектора или руководителя команды." } },
-  { icon: "🛠️", title: { en: "Modern Equipment",         az: "Müasir Avadanlıq",             ru: "Современное оборудование" }, desc: { en: "Work with the latest enterprise tech from day one.", az: "İlk gündən ən son korporativ texnologiya ilə işləyin.", ru: "Работа с новейшими корпоративными технологиями с первого дня." } },
-];
-
-const HIRING_STEPS = [
-  { num: "1", title: { en: "Apply",     az: "Müraciət",  ru: "Отклик" },     desc: { en: "Submit your CV online or via email.", az: "CV-nizi onlayn və ya e-poçtla göndərin.", ru: "Отправьте резюме онлайн или по email." } },
-  { num: "2", title: { en: "Review",    az: "İcmal",     ru: "Рассмотрение" }, desc: { en: "HR team reviews your background in 3 days.", az: "HR komandası 3 gündə CV-nizi nəzərdən keçirir.", ru: "HR рассматривает ваше резюме за 3 дня." } },
-  { num: "3", title: { en: "Interview", az: "Müsahibə",  ru: "Интервью" },   desc: { en: "Technical and HR interview rounds.", az: "Texniki və HR müsahibə turları.", ru: "Технический и HR-раунды интервью." } },
-  { num: "4", title: { en: "Offer",     az: "Təklif",    ru: "Предложение" }, desc: { en: "Receive your offer and start date.", az: "Təklifinizi və başlama tarixi alın.", ru: "Получите оффер и дату выхода." } },
-];
-
-const JOBS = [
-  {
-    title:    { en: "Senior Systems Engineer",          az: "Baş Sistem Mühəndisi",                ru: "Старший системный инженер" },
-    location: { en: "Baku",                             az: "Bakı",                                ru: "Баку" },
-    type:     { en: "Full-time · On-site",              az: "Tam iş vaxtı · Ofis",                 ru: "Полная занятость · Офис" },
-    desc:     { en: "Lead complex server, storage and virtualisation deployments for enterprise clients. Design and implement solutions from initial proposal to production handover.", az: "Korporativ müştərilər üçün kompleks server, yaddaş və virtuallaşdırma yerləşdirmələrinə rəhbərlik edin. İlkin təklifdən istehsala təhvil qədər həlləri dizayn edin və həyata keçirin.", ru: "Управляйте сложными развёртываниями серверов, СХД и виртуализации для корпоративных клиентов. Проектируйте и внедряйте решения от ТКП до передачи в эксплуатацию." },
-    tags:     { en: ["Dell", "HPE", "VMware", "5+ years"], az: ["Dell", "HPE", "VMware", "5+ il"], ru: ["Dell", "HPE", "VMware", "5+ лет"] },
-  },
-  {
-    title:    { en: "Network Security Specialist",      az: "Şəbəkə Təhlükəsizlik Mütəxəssisi",    ru: "Специалист по сетевой безопасности" },
-    location: { en: "Baku",                             az: "Bakı",                                ru: "Баку" },
-    type:     { en: "Full-time · Hybrid",               az: "Tam iş vaxtı · Hibrid",               ru: "Полная занятость · Гибрид" },
-    desc:     { en: "Design and implement firewall, VPN and zero-trust security architectures for clients across multiple industries.", az: "Müxtəlif sənaye sahələrindəki müştərilər üçün firewall, VPN və sıfır güvən təhlükəsizlik memarlıqlarını dizayn edin və həyata keçirin.", ru: "Проектируйте и внедряйте архитектуры безопасности на основе межсетевых экранов, VPN и нулевого доверия для клиентов из различных отраслей." },
-    tags:     { en: ["Fortinet", "Cisco", "NSE", "3+ years"], az: ["Fortinet", "Cisco", "NSE", "3+ il"], ru: ["Fortinet", "Cisco", "NSE", "3+ лет"] },
-  },
-  {
-    title:    { en: "IT Sales Manager",                 az: "IT Satış Meneceri",                    ru: "Менеджер по продажам IT" },
-    location: { en: "Baku",                             az: "Bakı",                                ru: "Баку" },
-    type:     { en: "Full-time · On-site",              az: "Tam iş vaxtı · Ofis",                 ru: "Полная занятость · Офис" },
-    desc:     { en: "Build and grow relationships with enterprise and SMB accounts. Identify opportunities, prepare technical proposals and close deals for the full product portfolio.", az: "Korporativ və KOB hesabları ilə əlaqələr qurun və inkişaf etdirin. İmkanları müəyyənləşdirin, texniki təkliflər hazırlayın və tam məhsul portfeli üçün sövdələşmələri bağlayın.", ru: "Создавайте и развивайте отношения с корпоративными и СМБ-клиентами. Находите возможности, готовьте технические предложения и заключайте сделки по всему портфелю." },
-    tags:     { en: ["B2B sales", "IT products", "CRM", "2+ years"], az: ["B2B satış", "IT məhsulları", "CRM", "2+ il"], ru: ["B2B-продажи", "IT-продукты", "CRM", "2+ лет"] },
-  },
-  {
-    title:    { en: "Technical Support Engineer",       az: "Texniki Dəstək Mühəndisi",            ru: "Инженер технической поддержки" },
-    location: { en: "Baku",                             az: "Bakı",                                ru: "Баку" },
-    type:     { en: "Full-time · On-site",              az: "Tam iş vaxtı · Ofis",                 ru: "Полная занятость · Офис" },
-    desc:     { en: "Provide first and second-line technical support to clients. Diagnose hardware and software issues, coordinate with vendors and escalate complex cases.", az: "Müştərilərə birinci və ikinci xətt texniki dəstək göstərin. Hardware və software problemlərini diaqnostika edin, satıcılarla əlaqəli olun və mürəkkəb halları eskalasiya edin.", ru: "Предоставляйте клиентам техническую поддержку первой и второй линии. Диагностируйте проблемы с оборудованием и ПО, координируйтесь с вендорами, эскалируйте сложные случаи." },
-    tags:     { en: ["Help desk", "Hardware", "Windows Server", "1+ year"], az: ["Yardım masası", "Hardware", "Windows Server", "1+ il"], ru: ["Helpdesk", "Оборудование", "Windows Server", "1+ год"] },
-  },
 ];
 
 const CONTACT_INFO = [
@@ -475,112 +418,15 @@ export default async function InfoPage({ params }: { params: Promise<{ lang: str
             </FadeUp>
             <div className="partner-grid">
               {dbPartners.map((p, i) => {
-                const pt = PARTNER_TIERS[p.name];
                 const desc = L === "az" ? p.descAZ : L === "ru" ? p.descRU : p.descEN;
                 return (
-                  <FadeUp key={p.id} delay={(i % 5) * 0.05} className="partner-card">
-                    <div className="partner-card__logo">
-                      {p.logoUrl ? <img src={p.logoUrl} alt={p.name} style={{ maxHeight: 48, maxWidth: 140, objectFit: "contain" }} /> : p.name}
-                      {pt && (
-                        <div style={{ marginTop: "8px" }}>
-                          <span className={`partner-tier partner-tier--${pt.level}`}>{pt.tier[L]}</span>
-                        </div>
-                      )}
-                    </div>
-                    {desc && <p className="partner-card__desc">{desc}</p>}
+                  <FadeUp key={p.id} delay={(i % 5) * 0.05}>
+                    <PartnerCard partner={p} description={desc} />
                   </FadeUp>
                 );
               })}
             </div>
           </section>
-          <FadeUp className="container" style={{ marginBottom: "56px" }}>
-            <p className="notice">{MIGRATE[L]}</p>
-          </FadeUp>
-        </div>
-      )}
-
-      {/* ═══════════ CAREERS ═══════════ */}
-      {key === "careers" && (
-        <div className="info-body">
-          <section className="info-alt-section">
-            <div className="container">
-              <FadeUp className="info-section-head">
-                <p className="eyebrow cats-eyebrow">{ { en: "Why join us", az: "Niyə bizə qoşulasınız", ru: "Почему стоит к нам присоединиться" }[L] }</p>
-                <h2>{ { en: "Life at Cyberspace", az: "Cyberspace-də həyat", ru: "Жизнь в Cyberspace" }[L] }</h2>
-              </FadeUp>
-              <div className="icard-grid">
-                {CAREERS_BENEFITS.map((b, i) => (
-                  <FadeUp key={i} delay={i * 0.06} className="icard">
-                    <div className="icard__emoji">{b.icon}</div>
-                    <h3 className="icard__title">{b.title[L]}</h3>
-                    <p className="icard__desc">{b.desc[L]}</p>
-                  </FadeUp>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          <section className="container section">
-            <FadeUp className="info-section-head">
-              <p className="eyebrow cats-eyebrow">{ { en: "How to join", az: "Necə qoşulmaq olar", ru: "Как присоединиться" }[L] }</p>
-              <h2>{ { en: "Hiring Process", az: "İşə Götürmə Prosesi", ru: "Процесс найма" }[L] }</h2>
-            </FadeUp>
-            <div className="hiring-steps">
-              {HIRING_STEPS.map((s, i) => (
-                <FadeUp key={i} delay={i * 0.07} className="hiring-step">
-                  <div className="hiring-step__num">{s.num}</div>
-                  <div className="hiring-step__title">{s.title[L]}</div>
-                  <div className="hiring-step__desc">{s.desc[L]}</div>
-                </FadeUp>
-              ))}
-            </div>
-          </section>
-
-          <section className="info-alt-section">
-            <div className="container">
-              <FadeUp className="info-section-head">
-                <h2>{ { en: "Our Departments", az: "Şöbələrimiz", ru: "Наши отделы" }[L] }</h2>
-              </FadeUp>
-              <div className="team-stat-grid">
-                {TEAM_STATS.map((s, i) => (
-                  <FadeUp key={i} delay={i * 0.06} className="team-stat-card">
-                    <div className="team-stat-card__num" style={{ color: s.color }}>{s.num}</div>
-                    <div className="team-stat-card__label">{s.label[L]}</div>
-                  </FadeUp>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          <section className="container section">
-            <FadeUp className="info-section-head">
-              <h2>{ { en: "Open Positions", az: "Açıq Vakansiyalar", ru: "Открытые вакансии" }[L] }</h2>
-              <p className="info-lead">{ { en: `${JOBS.length} positions available in Baku`, az: `Bakıda ${JOBS.length} vakansiya mövcuddur`, ru: `${JOBS.length} вакансии в Баку` }[L] }</p>
-            </FadeUp>
-            <div className="job-list">
-              {JOBS.map((job, i) => (
-                <FadeUp key={i} delay={i * 0.06} className="job-card">
-                  <div className="job-card__head">
-                    <div>
-                      <h3 className="job-card__title">{job.title[L]}</h3>
-                      <p className="job-card__meta">{job.location[L]} · {job.type[L]}</p>
-                    </div>
-                    <Link href={`/${lang}/contact`} className="btn btn--primary">
-                      { { en: "Apply", az: "Müraciət", ru: "Подать заявку" }[L] }
-                    </Link>
-                  </div>
-                  <p className="job-card__desc">{job.desc[L]}</p>
-                  <div className="job-card__tags">
-                    {job.tags[L].map((tag) => <span key={tag} className="job-tag">{tag}</span>)}
-                  </div>
-                </FadeUp>
-              ))}
-            </div>
-          </section>
-
-          <FadeUp className="container" style={{ marginBottom: "56px" }}>
-            <p className="notice">{MIGRATE[L]}</p>
-          </FadeUp>
         </div>
       )}
 
@@ -645,7 +491,7 @@ export default async function InfoPage({ params }: { params: Promise<{ lang: str
       )}
 
       {/* ═══════════ OTHER PAGES (fallback) ═══════════ */}
-      {!["about","solutions","partners","careers","contact"].includes(key) && (
+      {!["about","solutions","partners","contact"].includes(key) && (
         <div className="container section info">
           <p className="notice">{MIGRATE[L]}</p>
         </div>
