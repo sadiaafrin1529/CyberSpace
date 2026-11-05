@@ -81,11 +81,9 @@ const VALUES = [
 ];
 
 const TIMELINE = [
-  { year: "2009", en: "Cyberspace founded in Baku as an IT reseller.", az: "Cyberspace Bakıda IT distribütoru kimi yaradıldı.", ru: "Cyberspace основана в Баку как IT-реселлер." },
-  { year: "2012", en: "Became an official Dell Technologies authorised partner.", az: "Dell Technologies-in rəsmi səlahiyyətli tərəfdaşı oldu.", ru: "Стала авторизованным партнёром Dell Technologies." },
-  { year: "2016", en: "Expanded portfolio with HPE, Cisco and Fortinet.", az: "HPE, Cisco və Fortinet ilə portfeli genişləndi.", ru: "Расширение портфеля: HPE, Cisco и Fortinet." },
-  { year: "2020", en: "Launched the online catalogue and digital ordering system.", az: "Onlayn kataloq və rəqəmsal sifariş sistemi istifadəyə verildi.", ru: "Запущен онлайн-каталог и система цифровых заказов." },
-  { year: "2024", en: "Passed the milestone of 1,000+ enterprise clients.", az: "1000+ korporativ müştəri milə qaşı keçildi.", ru: "Преодолён рубеж в 1000+ корпоративных клиентов." },
+  { year: "1998", en: "Founded in Baku with a small team, initially focused on selling computers and technology equipment.", az: "Bakıda kiçik komanda ilə yarandı, əvvəlcə kompüter və texnoloji avadanlıqların satışına fokuslandı.", ru: "Основана в Баку небольшой командой, изначально специализировалась на продаже компьютеров и техники." },
+  { year: "2009", en: "Combined multiple service lines and expanded customer choice through international market research and staff training.", az: "Bir çox xidməti birləşdirdi, xarici bazar araşdırmaları və təlimlərlə müştərilər üçün seçim imkanlarını genişləndirdi.", ru: "Объединила несколько направлений услуг, расширив выбор для клиентов за счёт зарубежных исследований рынка и обучения персонала." },
+  { year: "2019", en: "Fully adapted to the modern era, delivering numerous projects; partnerships with leading national companies became a hallmark of quality.", az: "Müasir dövrə tam uyğunlaşaraq bir çox layihəyə imza atdı; ölkənin aparıcı şirkətləri ilə əməkdaşlıq keyfiyyətin göstəricisinə çevrildi.", ru: "Полностью адаптировалась к современным реалиям, реализовав множество проектов; сотрудничество с ведущими компаниями страны стало показателем качества." },
 ];
 
 const CERTIFICATIONS = [
@@ -195,9 +193,9 @@ const CONTACT_INFO = [
     ),
     label: { en: "Visit Us",      az: "Bizi ziyarət edin",     ru: "Наш офис" },
     lines: {
-      en: ["Baku Business Centre", "Nizami str. 95, Baku", "AZ1010, Azerbaijan"],
-      az: ["Bakı Biznes Mərkəzi", "Nizami küç. 95, Bakı", "AZ1010, Azərbaycan"],
-      ru: ["Бакинский бизнес-центр", "ул. Низами, 95, Баку", "AZ1010, Азербайджан"],
+      en: ["14 Hasan Mejidov Street", "Baku, Azerbaijan"],
+      az: ["Həsən Məcidov küç. 14", "Bakı, Azərbaycan"],
+      ru: ["ул. Гасан Меджидов, 14", "Баку, Азербайджан"],
     },
   },
   {
@@ -208,9 +206,9 @@ const CONTACT_INFO = [
     ),
     label: { en: "Call Us",       az: "Bizə zəng edin",        ru: "Позвоните нам" },
     lines: {
-      en: ["+994 12 404 04 04", "+994 50 404 04 04", "Mon–Fri 09:00–18:00"],
-      az: ["+994 12 404 04 04", "+994 50 404 04 04", "B.e–Cümə 09:00–18:00"],
-      ru: ["+994 12 404 04 04", "+994 50 404 04 04", "Пн–Пт 09:00–18:00"],
+      en: ["+994 12 404 74 45", "Mon–Fri 09:00–19:00, Sat 10:00–15:00"],
+      az: ["+994 12 404 74 45", "B.e–Cümə 09:00–19:00, Şənbə 10:00–15:00"],
+      ru: ["+994 12 404 74 45", "Пн–Пт 09:00–19:00, Сб 10:00–15:00"],
     },
   },
   {
@@ -417,14 +415,11 @@ export default async function InfoPage({ params }: { params: Promise<{ lang: str
               <p className="info-lead">{ { en: "We are authorised resellers for 10 of the world's leading IT brands, giving you genuine products, official warranties and direct vendor support.", az: "Biz dünyanın aparıcı 10 IT brendinin səlahiyyətli distribütorlarıyıq, sizə orijinal məhsullar, rəsmi zəmanətlər və birbaşa satıcı dəstəyi təklif edirik.", ru: "Мы являемся авторизованными реселлерами 10 ведущих мировых IT-брендов — гарантируем подлинность продуктов, официальную гарантию и поддержку вендора." }[L] }</p>
             </FadeUp>
             <div className="partner-grid">
-              {dbPartners.map((p, i) => {
-                const desc = L === "az" ? p.descAZ : L === "ru" ? p.descRU : p.descEN;
-                return (
-                  <FadeUp key={p.id} delay={(i % 5) * 0.05}>
-                    <PartnerCard partner={p} description={desc} />
-                  </FadeUp>
-                );
-              })}
+              {dbPartners.map((p, i) => (
+                <FadeUp key={p.id} delay={(i % 5) * 0.05}>
+                  <PartnerCard partner={p} />
+                </FadeUp>
+              ))}
             </div>
           </section>
         </div>

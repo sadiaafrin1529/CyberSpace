@@ -5,7 +5,7 @@ export interface PartnerCardData {
   websiteUrl: string | null;
 }
 
-export default function PartnerCard({ partner, description }: { partner: PartnerCardData; description?: string | null }) {
+export default function PartnerCard({ partner }: { partner: PartnerCardData }) {
   const content = (
     <>
       <div className="partner-card__logo">
@@ -14,7 +14,6 @@ export default function PartnerCard({ partner, description }: { partner: Partner
           : <span className="partner-card__fallback">{partner.name}</span>}
       </div>
       <p className="partner-card__name">{partner.name}</p>
-      {description && <p className="partner-card__desc">{description}</p>}
     </>
   );
 

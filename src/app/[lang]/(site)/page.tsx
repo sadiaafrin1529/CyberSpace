@@ -193,7 +193,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
   const t = getDict(lang);
   const h = t.home;
   const features = [[h.f1t, h.f1d], [h.f2t, h.f2d], [h.f3t, h.f3d], [h.f4t, h.f4d]];
-  const stats = [["15+", h.statYears], ["100+", h.statBrands], ["1000+", h.statCustomers], ["50+", h.statTeam]];
+  const stats = [["28+", h.statYears], ["100+", h.statBrands], ["1000+", h.statCustomers], ["50+", h.statTeam]];
   const L = lang as "en" | "az" | "ru";
 
   const [partners, newsItems, dbCats] = await Promise.all([fetchActivePartners(), fetchPublishedNews(), fetchActiveCategories()]);

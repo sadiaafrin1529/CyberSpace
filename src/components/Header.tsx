@@ -11,7 +11,7 @@ import { useAuthUser } from "@/redux/fetchers/auth/authSlice";
 
 const NAV = [
   ["home", ""], ["about", "/about"], ["products", "/shop"], ["solutions", "/solutions"],
-  ["partners", "/partners"], ["news", "/news"], ["careers", "/careers"], ["contact", "/contact"],
+  ["partners", "/partners"], ["careers", "/careers"], ["contact", "/contact"],
 ] as const;
 
 const EASE = [0.25, 0.1, 0.25, 1] as const;
@@ -59,10 +59,12 @@ export default function Header() {
               {t.nav[key]}
             </Link>
           ))}
-          <Link href={authHref}
-            className={`nav__link nav__login${isActive("/login") || isActive("/dashboard") ? " is-active" : ""}`}>
-            {authLabel}
-          </Link>
+          {user && (
+            <Link href={authHref}
+              className={`nav__link nav__login${isActive("/dashboard") ? " is-active" : ""}`}>
+              {authLabel}
+            </Link>
+          )}
         </nav>
 
         <div className="header__tools">
@@ -150,15 +152,17 @@ export default function Header() {
               </motion.div>
             ))}
 
-            <motion.div
-              initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.07 + NAV.length * 0.034, duration: 0.22, ease: EASE }}>
-              <Link href={authHref}
-                className={`mobile-nav__link${isActive("/login") || isActive("/dashboard") ? " is-active" : ""}`}
-                onClick={close}>
-                {authLabel}
-              </Link>
-            </motion.div>
+            {user && (
+              <motion.div
+                initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.07 + NAV.length * 0.034, duration: 0.22, ease: EASE }}>
+                <Link href={authHref}
+                  className={`mobile-nav__link${isActive("/dashboard") ? " is-active" : ""}`}
+                  onClick={close}>
+                  {authLabel}
+                </Link>
+              </motion.div>
+            )}
           </motion.nav>
         )}
       </AnimatePresence>

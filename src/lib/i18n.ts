@@ -1,6 +1,6 @@
 export const LOCALES = ["az", "en", "ru"] as const;
 export type Locale = (typeof LOCALES)[number];
-export const DEFAULT_LOCALE: Locale = "en";
+export const DEFAULT_LOCALE: Locale = "az";
 
 export function isLocale(v: string): v is Locale {
   return (LOCALES as readonly string[]).includes(v);
