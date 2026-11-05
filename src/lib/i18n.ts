@@ -627,3 +627,5 @@ export function getDict(locale: Locale): Dict {
 }
 
 export const LOCALE_LABEL: Record<Locale, string> = { az: "AZ", en: "EN", ru: "RU" };
+export const LOCALE_NAME: Record<Locale, string> = { az: "Azərbaycan", en: "English", ru: "Русский" };
+export const LOCALE_FLAG: Record<Locale, string> = { az: "🇦🇿", en: "🇬🇧", ru: "🇷🇺" };

@@ -4,10 +4,17 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { LOCALES, LOCALE_LABEL, type Locale } from "@/lib/i18n";
+import { ChevronDown } from "lucide-react";
+import { LOCALES, LOCALE_LABEL, LOCALE_NAME, LOCALE_FLAG, type Locale } from "@/lib/i18n";
 import { useLang } from "@/lib/useLang";
 import Logo from "./Logo";
 import { useAuthUser } from "@/redux/fetchers/auth/authSlice";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 const NAV = [
   ["home", ""], ["about", "/about"], ["products", "/shop"], ["solutions", "/solutions"],
@@ -77,15 +84,27 @@ export default function Header() {
           </Link>
 
           {/* Language switcher — desktop header */}
-          <div className="lang header__lang" role="group" aria-label={t.common.language}>
-            {LOCALES.map((l) => (
-              <Link key={l} href={swap(l)} hrefLang={l}
-                className={`lang__btn${l === lang ? " is-active" : ""}`}
-                aria-current={l === lang ? "true" : undefined}>
-                {LOCALE_LABEL[l]}
-              </Link>
-            ))}
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button type="button" className="lang-trigger" aria-label={t.common.language}>
+                <span className="lang-trigger__flag" aria-hidden="true">{LOCALE_FLAG[lang]}</span>
+                <span className="lang-trigger__code">{LOCALE_LABEL[lang]}</span>
+                <ChevronDown size={14} className="lang-trigger__chevron" aria-hidden="true" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="lang-menu">
+              {LOCALES.map((l) => (
+                <DropdownMenuItem key={l} asChild>
+                  <Link href={swap(l)} hrefLang={l}
+                    className={`lang-menu__item${l === lang ? " is-active" : ""}`}
+                    aria-current={l === lang ? "true" : undefined}>
+                    <span className="lang-menu__flag" aria-hidden="true">{LOCALE_FLAG[l]}</span>
+                    <span className="lang-menu__name">{LOCALE_NAME[l]}</span>
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           {/* Hamburger — hidden ≥ 1040 px */}
           <button type="button" className="iconbtn menubtn"
@@ -132,7 +151,7 @@ export default function Header() {
                     className={`lang__btn${l === lang ? " is-active" : ""}`}
                     aria-current={l === lang ? "true" : undefined}
                     onClick={close}>
-                    {LOCALE_LABEL[l]}
+                    <span aria-hidden="true">{LOCALE_FLAG[l]}</span> {LOCALE_LABEL[l]}
                   </Link>
                 ))}
               </div>
