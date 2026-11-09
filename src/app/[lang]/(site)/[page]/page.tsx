@@ -12,12 +12,6 @@ export const dynamic = "force-dynamic";
 const PAGES = ["about", "solutions", "partners", "contact"] as const;
 type PageKey = (typeof PAGES)[number];
 
-const MIGRATE: Record<Locale, string> = {
-  en: "Full page content will be migrated from the current Cyberspace.az website.",
-  az: "Tam səhifə məzmunu mövcud Cyberspace.az saytından köçürüləcək.",
-  ru: "Полное содержание страницы будет перенесено с текущего сайта Cyberspace.az.",
-};
-
 interface DbPartner {
   id: number; name: string; logoUrl: string | null;
   descEN: string | null; descAZ: string | null; descRU: string | null;
@@ -327,10 +321,6 @@ export default async function InfoPage({ params }: { params: Promise<{ lang: str
               ))}
             </div>
           </section>
-
-          <FadeUp className="container" style={{ marginBottom: "56px" }}>
-            <p className="notice">{MIGRATE[L]}</p>
-          </FadeUp>
         </div>
       )}
 
@@ -376,10 +366,6 @@ export default async function InfoPage({ params }: { params: Promise<{ lang: str
               </div>
             </div>
           </section>
-
-          <FadeUp className="container" style={{ marginBottom: "56px" }}>
-            <p className="notice">{MIGRATE[L]}</p>
-          </FadeUp>
         </div>
       )}
 
@@ -456,17 +442,6 @@ export default async function InfoPage({ params }: { params: Promise<{ lang: str
               </Link>
             </FadeUp>
           </section>
-
-          <FadeUp className="container" style={{ paddingTop: "40px", paddingBottom: "56px" }}>
-            <p className="notice">{MIGRATE[L]}</p>
-          </FadeUp>
-        </div>
-      )}
-
-      {/* ═══════════ OTHER PAGES (fallback) ═══════════ */}
-      {!["about","solutions","partners","contact"].includes(key) && (
-        <div className="container section info">
-          <p className="notice">{MIGRATE[L]}</p>
         </div>
       )}
     </>
