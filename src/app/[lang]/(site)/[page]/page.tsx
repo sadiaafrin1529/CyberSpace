@@ -102,74 +102,52 @@ const TEAM_STATS = [
   { num: "5",   label: { en: "Project mgrs", az: "Layihə müdirləri", ru: "PM" }, color: "#d97706" },
 ];
 
+const svg = (children: React.ReactNode) => (
+  <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">{children}</svg>
+);
+
 const SOLUTIONS = [
   {
     color: "blue",
-    icon: (
-      <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="2" y="3" width="20" height="5" rx="1"/><rect x="2" y="10" width="20" height="5" rx="1"/><rect x="2" y="17" width="20" height="5" rx="1"/>
-        <circle cx="19" cy="5.5" r="1" fill="currentColor" stroke="none"/><circle cx="19" cy="12.5" r="1" fill="currentColor" stroke="none"/><circle cx="19" cy="19.5" r="1" fill="currentColor" stroke="none"/>
-      </svg>
-    ),
-    title:    { en: "Server Infrastructure",          az: "Server İnfrastrukturu",          ru: "Серверная инфраструктура" },
-    desc:     { en: "Design, supply and deploy enterprise-grade server environments built for reliability and scale.", az: "Etibarlılıq və miqyas üçün nəzərdə tutulmuş korporativ server mühitlərini dizayn edin, tədarük edin və yerləşdirin.", ru: "Проектирование, поставка и развёртывание серверных сред корпоративного уровня." },
-    features: { en: ["Rack, tower and blade servers", "Hyper-converged infrastructure", "UPS and power management", "Rack systems and cooling"], az: ["Stend, qüllə və blade serverlər", "Hiperkonvergent infrastruktur", "UPS və güc idarəetməsi", "Stend sistemləri və soyutma"], ru: ["Стоечные, башенные и блейд-серверы", "Гиперконвергентная инфраструктура", "ИБП и управление питанием", "Стоечные системы и охлаждение"] },
+    icon: svg(<><rect x="2" y="3" width="20" height="5" rx="1"/><rect x="2" y="10" width="20" height="5" rx="1"/><rect x="2" y="17" width="20" height="5" rx="1"/><circle cx="19" cy="5.5" r="1" fill="currentColor" stroke="none"/><circle cx="19" cy="12.5" r="1" fill="currentColor" stroke="none"/><circle cx="19" cy="19.5" r="1" fill="currentColor" stroke="none"/></>),
+    title:    { en: "Information Technology Systems", az: "İnformasiya Texnologiyaları Sistemləri", ru: "Информационные технологии" },
+    desc:     { en: "IT infrastructure, servers and storage solutions", az: "İT infrastruktur, serverlər və yaddaş həlləri", ru: "ИТ-инфраструктура, серверы и системы хранения данных" },
+    features: { en: ["Corporate networks", "Cybersecurity", "Cloud solutions", "Software solutions"], az: ["Korporativ şəbəkələr", "Kibertəhlükəsizlik", "Bulud həlləri", "Proqram təminatı həlləri"], ru: ["Корпоративные сети", "Кибербезопасность", "Облачные решения", "Программные решения"] },
+  },
+  {
+    color: "orange",
+    icon: svg(<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>),
+    title:    { en: "Electrical Systems", az: "Elektrik Sistemləri", ru: "Электрические системы" },
+    desc:     { en: "Power distribution and protection", az: "Enerji paylanması və mühafizəsi", ru: "Распределение и защита электропитания" },
+    features: { en: ["Low- and medium-voltage infrastructure", "Distribution panels", "Lighting", "Electrical engineering"], az: ["Aşağı və orta gərginlikli infrastruktur", "Paylayıcı şitlər", "İşıqlandırma", "Elektrik mühəndisliyi"], ru: ["Инфраструктура низкого и среднего напряжения", "Распределительные щиты", "Освещение", "Электротехнический инжиниринг"] },
   },
   {
     color: "cyan",
-    icon: (
-      <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
-        <circle cx="12" cy="20" r="1.5" fill="currentColor" stroke="none"/>
-      </svg>
-    ),
-    title:    { en: "Network Infrastructure",    az: "Şəbəkə İnfrastrukturu",    ru: "Сетевая инфраструктура" },
-    desc:     { en: "Build scalable, managed networks that keep your organisation connected and secure from campus to branch.", az: "Kampusdan filiala qədər təşkilatınızı qoşulmuş və təhlükəsiz saxlayan miqyaslana bilən, idarə olunan şəbəkələr qurun.", ru: "Создайте масштабируемые управляемые сети для подключения и защиты организации от кампуса до филиала." },
-    features: { en: ["Switching and routing", "Wi-Fi 6 access points", "SD-WAN solutions", "Network monitoring and management"], az: ["Kommutasiya və marşrutlaşdırma", "Wi-Fi 6 giriş nöqtələri", "SD-WAN həlləri", "Şəbəkə monitorinqi və idarəetməsi"], ru: ["Коммутация и маршрутизация", "Точки доступа Wi-Fi 6", "Решения SD-WAN", "Мониторинг и управление сетью"] },
+    icon: svg(<><circle cx="12" cy="12" r="2"/><path d="M12 10c0-4 1-7 4-7 2 0 3 2 2 4-1 2-3 3-6 3z"/><path d="M14 12c4 0 7 1 7 4 0 2-2 3-4 2-2-1-3-3-3-6z"/><path d="M12 14c0 4-1 7-4 7-2 0-3-2-2-4 1-2 3-3 6-3z"/><path d="M10 12c-4 0-7-1-7-4 0-2 2-3 4-2 2 1 3 3 3 6z"/></>),
+    title:    { en: "Mechanical Systems & HVAC", az: "Mexaniki Sistemlər və HVAC", ru: "Механические системы и HVAC" },
+    desc:     { en: "Climate control and mechanical works", az: "İqlim nəzarəti və mexaniki işlər", ru: "Климат-контроль и механические работы" },
+    features: { en: ["Ventilation", "Air conditioning", "Heating and plumbing", "Technical maintenance"], az: ["Ventilyasiya", "Kondisioner", "İstilik və santexnika", "Texniki xidmət"], ru: ["Вентиляция", "Кондиционирование", "Отопление и водоснабжение", "Техническое обслуживание"] },
   },
   {
     color: "red",
-    icon: (
-      <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>
-      </svg>
-    ),
-    title:    { en: "Cybersecurity",          az: "Kibertəhlükəsizlik",          ru: "Кибербезопасность" },
-    desc:     { en: "Protect your organisation with a layered security approach — from perimeter defence to endpoint and video surveillance.", az: "Perimetr müdafiəsindən endpoint-ə və video müşahidəyə qədər çoxqatlı təhlükəsizlik yanaşması ilə təşkilatınızı qoruyun.", ru: "Защитите организацию многоуровневым подходом: от периметра до конечных устройств и видеонаблюдения." },
-    features: { en: ["Next-generation firewalls (FortiGate)", "Endpoint protection", "IP video surveillance (Axis)", "Access control and monitoring"], az: ["Növbəti nəsil firewall (FortiGate)", "Endpoint qorunması", "IP video müşahidə (Axis)", "Giriş nəzarəti və monitorinq"], ru: ["NGFW (FortiGate)", "Защита конечных устройств", "IP-видеонаблюдение (Axis)", "Контроль доступа и мониторинг"] },
+    icon: svg(<><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></>),
+    title:    { en: "Low-Current Systems", az: "Zəif Cərəyan Sistemləri", ru: "Слаботочные системы" },
+    desc:     { en: "Integrated building infrastructure", az: "İnteqrasiya olunmuş bina infrastrukturu", ru: "Интегрированная инфраструктура зданий" },
+    features: { en: ["Video surveillance", "Access control", "Structured cabling", "Intercom and network systems"], az: ["Video müşahidə", "Giriş nəzarəti", "Struktur kabelləmə", "Domofon və şəbəkə sistemləri"], ru: ["Видеонаблюдение", "Контроль доступа", "Структурированные кабельные сети", "Домофонные и сетевые системы"] },
   },
   {
     color: "violet",
-    icon: (
-      <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-        <ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
-      </svg>
-    ),
-    title:    { en: "Data Storage & Backup",  az: "Məlumat Yaddaşı və Ehtiyat",  ru: "Хранение данных и резервное копирование" },
-    desc:     { en: "Store, protect and recover your business data with enterprise storage arrays, NAS and tape backup systems.", az: "Korporativ yaddaş massivləri, NAS və lent ehtiyat sistemləri ilə biznes məlumatlarınızı saxlayın, qoruyun və bərpa edin.", ru: "Храните, защищайте и восстанавливайте бизнес-данные с помощью корпоративных СХД, NAS и ленточных систем резервного копирования." },
-    features: { en: ["All-flash storage arrays (Dell PowerStore)", "NAS and hybrid storage", "Tape libraries (HPE StoreEver)", "Backup software and DR planning"], az: ["Tam flash yaddaş massivləri (Dell PowerStore)", "NAS və hibrid yaddaş", "Lent kitabxanaları (HPE StoreEver)", "Ehtiyat proqramı və DR planlaması"], ru: ["Полностью флэш СХД (Dell PowerStore)", "NAS и гибридное хранение", "Ленточные библиотеки (HPE StoreEver)", "ПО для резервного копирования и планирование DR"] },
+    icon: svg(<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>),
+    title:    { en: "Fire Protection Systems", az: "Yanğından Mühafizə Sistemləri", ru: "Системы пожарной защиты" },
+    desc:     { en: "Project-based fire safety", az: "Layihə əsaslı yanğın təhlükəsizliyi", ru: "Пожарная безопасность на основе проектов" },
+    features: { en: ["Fire detection", "Alarm", "Suppression", "Evacuation and system integration"], az: ["Yanğın aşkarlanması", "Siqnalizasiya", "Yanğınsöndürmə", "Təxliyə və sistem inteqrasiyası"], ru: ["Обнаружение пожара", "Сигнализация", "Пожаротушение", "Эвакуация и интеграция систем"] },
   },
   {
     color: "green",
-    icon: (
-      <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
-      </svg>
-    ),
-    title:    { en: "Software & Licensing",   az: "Proqram və Lisenziyalaşdırma",  ru: "Программное обеспечение и лицензирование" },
-    desc:     { en: "Get genuine, volume-licensed software with full vendor support — from Microsoft 365 to Windows Server and security suites.", az: "Microsoft 365-dən Windows Server-ə və təhlükəsizlik paketlərinə qədər tam satıcı dəstəyi ilə orijinal, həcmli lisenziyalı proqram əldə edin.", ru: "Подлинное программное обеспечение с корпоративными лицензиями и полной поддержкой вендора — от Microsoft 365 до Windows Server." },
-    features: { en: ["Microsoft 365 and Windows licensing", "Windows Server and SQL Server", "Security and endpoint software", "Volume and open licensing programs"], az: ["Microsoft 365 və Windows lisenziyaları", "Windows Server və SQL Server", "Təhlükəsizlik və endpoint proqramı", "Həcmli və açıq lisenziyalaşdırma proqramları"], ru: ["Лицензирование Microsoft 365 и Windows", "Windows Server и SQL Server", "Защита и ПО для конечных устройств", "Корпоративное и открытое лицензирование"] },
-  },
-  {
-    color: "indigo",
-    icon: (
-      <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
-      </svg>
-    ),
-    title:    { en: "End-User Computing",     az: "Son İstifadəçi Hesablaması",   ru: "Рабочие места" },
-    desc:     { en: "Equip your workforce with business-grade laptops, desktops, monitors and accessories from leading brands.", az: "İş gücünüzü aparıcı brendlərin biznes sinifli noutbukları, masa kompüterləri, monitorları və aksesuarları ilə təchiz edin.", ru: "Оснастите сотрудников ноутбуками, ПК, мониторами и аксессуарами бизнес-класса от ведущих брендов." },
-    features: { en: ["Business laptops (ThinkPad, EliteBook)", "Compact desktops and workstations", "4K monitors and peripherals", "Keyboard, mice and conferencing gear"], az: ["Biznes noutbuklar (ThinkPad, EliteBook)", "Yığcam masaüstü kompüterlər və iş stansiyaları", "4K monitorlar və periferiya", "Klaviatura, siçan və konfrans avadanlığı"], ru: ["Бизнес-ноутбуки (ThinkPad, EliteBook)", "Компактные ПК и рабочие станции", "4K-мониторы и периферия", "Клавиатуры, мыши и конференц-оборудование"] },
+    icon: svg(<><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></>),
+    title:    { en: "Automation & Smart Systems", az: "Avtomatlaşdırma və Ağıllı Sistemlər", ru: "Автоматизация и умные системы" },
+    desc:     { en: "BMS, SCADA, IoT and control solutions", az: "BMS, SCADA, IoT və idarəetmə həlləri", ru: "BMS, SCADA, IoT и решения для управления" },
+    features: { en: ["BMS", "SCADA", "Smart buildings and IoT", "Integrated control solutions"], az: ["BMS", "SCADA", "Ağıllı binalar və IoT", "İnteqrasiya olunmuş idarəetmə həlləri"], ru: ["BMS", "SCADA", "Умные здания и IoT", "Интегрированные решения для управления"] },
   },
 ];
 

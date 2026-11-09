@@ -1008,6 +1008,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .sol-card--violet { --sol-c: #7c3aed; --sol-s: #f5f3ff; }
 .sol-card--green  { --sol-c: #059669; --sol-s: #ecfdf5; }
 .sol-card--indigo { --sol-c: #4f46e5; --sol-s: #eef2ff; }
+.sol-card--orange { --sol-c: #f97316; --sol-s: #fff3e8; }
 .sol-card[class*="sol-card--"] .sol-card__icon { background: var(--sol-s, var(--blue-soft)); color: var(--sol-c, var(--blue)); }
 .sol-card[class*="sol-card--"]:hover .sol-card__icon { background: var(--sol-c, var(--blue)); color: #fff; }
 .sol-card[class*="sol-card--"] .sol-card__list li::before { background: var(--sol-c, var(--blue-bright)); }
