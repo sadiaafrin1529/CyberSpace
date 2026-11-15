@@ -157,7 +157,7 @@ export default async function NewsDetail({ params }: { params: Params }) {
           </FadeUp>
           <FadeUp delay={0.1}>
             <div className="news-detail__footer">
-              <Link href={`/${lang}/news`} className="btn btn--outline news-detail__back">
+              <Link href={`/${lang}/news`} className="btn border-dotted border border-rounded news-detail__back">
                 ← {backLabel}
               </Link>
             </div>
