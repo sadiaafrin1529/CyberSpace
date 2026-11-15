@@ -21,7 +21,7 @@ const NAV = [
   ["about", "/about"],
   ["products", "/shop"],
   ["solutions", "/solutions"],
-  ["partners", "/partners"],
+  ["news", "/news"],
   ["careers", "/careers"],
   ["contact", "/contact"],
 ] as const;

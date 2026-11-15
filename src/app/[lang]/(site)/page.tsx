@@ -761,9 +761,6 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
                 </p>
                 <h2 className="cats-title">{h.partnersTitle}</h2>
               </div>
-              <Link href={`/${lang}/partners`} className="cats-viewall">
-                {t.common.viewAll} →
-              </Link>
             </FadeUp>
             <FadeUp>
               <PartnersCarousel partners={partners} lang={lang} />

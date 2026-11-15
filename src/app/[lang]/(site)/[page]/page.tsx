@@ -1,28 +1,14 @@
 import OfficeMap from "@/components/OfficeMap";
+import FaqAccordion from "@/components/FaqAccordion";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { getDict, isLocale, type Locale } from "@/lib/i18n";
 import { pageMeta } from "@/lib/seo";
-import { CACHE_TAGS, serverGet } from "@/lib/server-api";
 import { FadeDown, FadeLeft, FadeRight, FadeUp, ZoomIn } from "@/components/Motion";
-import PartnerCard from "@/components/PartnerCard";
 
-const PAGES = ["about", "solutions", "partners", "contact"] as const;
+const PAGES = ["about", "solutions", "contact"] as const;
 type PageKey = (typeof PAGES)[number];
-
-interface DbPartner {
-  id: number;
-  name: string;
-  logoUrl: string | null;
-  descEN: string | null;
-  descAZ: string | null;
-  descRU: string | null;
-  websiteUrl: string | null;
-}
-
-const fetchActivePartners = () =>
-  serverGet<DbPartner[]>("/partners/active", [], [CACHE_TAGS.partners]);
 
 export async function generateMetadata({
   params,
@@ -566,8 +552,6 @@ export default async function InfoPage({
   const key = page as PageKey;
   const L = lang as Locale;
 
-  const dbPartners = key === "partners" ? await fetchActivePartners() : [];
-
   return (
     <>
       {/* ── Page Hero ── */}
@@ -770,50 +754,6 @@ export default async function InfoPage({
         </div>
       )}
 
-      {/* ═══════════ PARTNERS ═══════════ */}
-      {key === "partners" && (
-        <div className="info-body">
-          <section className="container section">
-            <FadeUp className="info-section-head">
-              <p className="eyebrow cats-eyebrow">
-                {
-                  {
-                    en: "Authorised reseller",
-                    az: "Səlahiyyətli distribütor",
-                    ru: "Авторизованный реселлер",
-                  }[L]
-                }
-              </p>
-              <h2>
-                {
-                  {
-                    en: "Our Technology Partners",
-                    az: "Texnologiya Tərəfdaşlarımız",
-                    ru: "Наши технологические партнёры",
-                  }[L]
-                }
-              </h2>
-              <p className="info-lead">
-                {
-                  {
-                    en: "We are authorised resellers for 10 of the world's leading IT brands, giving you genuine products, official warranties and direct vendor support.",
-                    az: "Biz dünyanın aparıcı 10 IT brendinin səlahiyyətli distribütorlarıyıq, sizə orijinal məhsullar, rəsmi zəmanətlər və birbaşa satıcı dəstəyi təklif edirik.",
-                    ru: "Мы являемся авторизованными реселлерами 10 ведущих мировых IT-брендов — гарантируем подлинность продуктов, официальную гарантию и поддержку вендора.",
-                  }[L]
-                }
-              </p>
-            </FadeUp>
-            <div className="partner-grid">
-              {dbPartners.map((p, i) => (
-                <FadeUp key={p.id} delay={(i % 5) * 0.05}>
-                  <PartnerCard partner={p} />
-                </FadeUp>
-              ))}
-            </div>
-          </section>
-        </div>
-      )}
-
       {/* ═══════════ CONTACT ═══════════ */}
       {key === "contact" && (
         <div className="info-body">
@@ -870,31 +810,7 @@ export default async function InfoPage({
                   }
                 </h2>
               </FadeUp>
-              <div className="faq-list">
-                {FAQS.map((faq, i) => (
-                  <FadeUp key={i} delay={i * 0.05} className="faq-item">
-                    <div className="faq-q">
-                      <span>{faq.q[L]}</span>
-                      <svg
-                        viewBox="0 0 20 20"
-                        width="18"
-                        height="18"
-                        fill="none"
-                        aria-hidden="true"
-                      >
-                        <path
-                          d="M5 7l5 5 5-5"
-                          stroke="currentColor"
-                          strokeWidth="1.8"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </div>
-                    <div className="faq-a">{faq.a[L]}</div>
-                  </FadeUp>
-                ))}
-              </div>
+              <FaqAccordion items={FAQS.map((f) => ({ q: f.q[L], a: f.a[L] }))} />
             </div>
           </section>
 

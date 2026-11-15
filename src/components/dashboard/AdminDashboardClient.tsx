@@ -7,7 +7,21 @@ import { useGetInquiriesQuery, type Inquiry } from "@/redux/fetchers/inquiry/inq
 import { useGetProductsQuery } from "@/redux/fetchers/product/productApi";
 import { useGetAllUsersQuery } from "@/redux/fetchers/user/userApi";
 import { useGetCategoriesQuery } from "@/redux/fetchers/category/categoryApi";
+import { useGetJobStatsQuery } from "@/redux/fetchers/job/jobApi";
+import { useGetPartnersQuery } from "@/redux/fetchers/partner/partnerApi";
+import { useGetNewsQuery } from "@/redux/fetchers/news/newsApi";
 import { useMeQuery } from "@/redux/fetchers/auth/authApi";
+import {
+  ArrowUpRight,
+  Briefcase,
+  FileText,
+  Handshake,
+  Layers,
+  MessageSquare,
+  Newspaper,
+  Package,
+  Users,
+} from "lucide-react";
 import SkeletonTableRows from "@/components/dashboard/SkeletonTableRows";
 
 interface Props {
@@ -28,13 +42,47 @@ function getProductName(inq: Inquiry, lang: string) {
 }
 
 export default function AdminDashboardClient({ lang, t, base }: Props) {
-  const { data: inquiryData, isLoading: inquiriesLoading } = useGetInquiriesQuery();
-  const { data: productsData, isLoading: productsLoading } = useGetProductsQuery();
-  const { data: usersData, isLoading: usersLoading } = useGetAllUsersQuery();
-  const { data: categoriesData, isLoading: categoriesLoading } = useGetCategoriesQuery();
+  const {
+    data: inquiryData,
+    isLoading: inquiriesLoading,
+    isError: inquiriesError,
+  } = useGetInquiriesQuery();
+  const {
+    data: productsData,
+    isLoading: productsLoading,
+    isError: productsError,
+  } = useGetProductsQuery();
+  const { data: usersData, isLoading: usersLoading, isError: usersError } = useGetAllUsersQuery();
+  const {
+    data: categoriesData,
+    isLoading: categoriesLoading,
+    isError: categoriesError,
+  } = useGetCategoriesQuery();
+  const { data: jobStats, isLoading: jobsLoading, isError: jobsError } = useGetJobStatsQuery();
+  const {
+    data: partnersData,
+    isLoading: partnersLoading,
+    isError: partnersError,
+  } = useGetPartnersQuery();
+  const { data: newsData, isLoading: newsLoading, isError: newsError } = useGetNewsQuery();
   const { data: user } = useMeQuery();
 
-  const isLoading = inquiriesLoading || productsLoading || usersLoading || categoriesLoading;
+  const hasError =
+    inquiriesError ||
+    productsError ||
+    usersError ||
+    categoriesError ||
+    jobsError ||
+    partnersError ||
+    newsError;
+  const isLoading =
+    inquiriesLoading ||
+    productsLoading ||
+    usersLoading ||
+    categoriesLoading ||
+    jobsLoading ||
+    partnersLoading ||
+    newsLoading;
 
   if (isLoading) {
     return (
@@ -49,7 +97,7 @@ export default function AdminDashboardClient({ lang, t, base }: Props) {
           </div>
         </div>
         <div className="stat-grid">
-          {Array.from({ length: 6 }).map((_, i) => (
+          {Array.from({ length: 10 }).map((_, i) => (
             <div key={i} className="stat-card">
               <span className="skel skel--avatar" />
               <div className="stat-card__body">
@@ -94,323 +142,242 @@ export default function AdminDashboardClient({ lang, t, base }: Props) {
   const newCount = inquiries.filter((i) => i.status === "NEW").length;
   const inProgressCount = inquiries.filter((i) => i.status === "IN_PROGRESS").length;
   const doneCount = inquiries.filter((i) => i.status === "DONE").length;
+  const partners = partnersData ?? [];
+  const activePartners = partners.filter((p) => p.isActive).length;
+  const news = newsData ?? [];
+  const publishedNews = news.filter((n) => n.status === "PUBLISHED").length;
+  const activeJobs = jobStats?.activeJobs ?? 0;
+  const totalApplications = jobStats?.totalApplications ?? 0;
+  const pendingApplications = jobStats?.pendingApplications ?? 0;
   const recent = inquiries.slice(0, 5);
 
+  const totalInq = inquiries.length;
+  const pct = (n: number) => (totalInq ? (n / totalInq) * 100 : 0);
+  const topJobs = (jobStats?.applicationsPerJob ?? []).slice(0, 5);
+  const maxApps = Math.max(1, ...topJobs.map((j) => j.applications));
+
+  const stats = [
+    {
+      href: `${base}/inquiries`,
+      icon: MessageSquare,
+      tone: "blue",
+      label: t.dash.inquiries,
+      value: totalInq,
+      sub: `${newCount} ${t.dash.newLabel}`,
+    },
+    {
+      href: `${base}/products`,
+      icon: Package,
+      tone: "violet",
+      label: t.dash.totalProducts,
+      value: products.length,
+    },
+    {
+      href: `${base}/categories`,
+      icon: Layers,
+      tone: "indigo",
+      label: t.dash.categories ?? "Categories",
+      value: categories.length,
+    },
+    {
+      href: `${base}/users`,
+      icon: Users,
+      tone: "cyan",
+      label: t.dash.totalUsers,
+      value: users.length,
+    },
+    {
+      href: `${base}/news`,
+      icon: Newspaper,
+      tone: "amber",
+      label: t.dash.publishedNews,
+      value: publishedNews,
+      sub: `${news.length} ${t.dash.totalLabel}`,
+    },
+    {
+      href: `${base}/partners`,
+      icon: Handshake,
+      tone: "green",
+      label: t.dash.activePartners,
+      value: activePartners,
+      sub: `${partners.length} ${t.dash.totalLabel}`,
+    },
+    {
+      href: `${base}/jobs`,
+      icon: Briefcase,
+      tone: "blue",
+      label: t.dash.activeJobs,
+      value: activeJobs,
+    },
+    {
+      href: `${base}/applications`,
+      icon: FileText,
+      tone: "violet",
+      label: t.dash.applications,
+      value: totalApplications,
+      sub: `${pendingApplications} ${t.dash.pendingLabel}`,
+    },
+  ];
+
+  const statusRows = [
+    { key: "NEW", label: t.dash.statusNew, n: newCount, tone: "blue" },
+    { key: "IN_PROGRESS", label: t.dash.statusInProgress, n: inProgressCount, tone: "amber" },
+    { key: "DONE", label: t.dash.statusDone, n: doneCount, tone: "green" },
+  ];
+
   return (
-    <div>
-      <div className="dash-page-header">
+    <div className="ov">
+      <section className="ov-hero">
         <div>
-          <h1 className="dash-page-title">
+          <p className="ov-hero__date">{formatDate(new Date().toISOString(), lang as Locale)}</p>
+          <h1 className="ov-hero__title">
             {t.dash.welcomeBack}
             {user?.name ? `, ${user.name}` : ""}
           </h1>
-          <p className="dash-page-sub">{t.dash.adminPanel}</p>
+          <p className="ov-hero__sub">{t.dash.adminPanel}</p>
         </div>
+        <div className="ov-hero__chips">
+          <Link href={`${base}/inquiries`} className="ov-chip">
+            <strong>{newCount}</strong> {t.dash.newInquiries}
+            <ArrowUpRight size={14} />
+          </Link>
+          <Link href={`${base}/applications`} className="ov-chip">
+            <strong>{pendingApplications}</strong> {t.dash.pendingApplications}
+            <ArrowUpRight size={14} />
+          </Link>
+        </div>
+      </section>
+
+      {hasError && (
+        <p role="alert" className="ov-alert">
+          {t.dash.loadError}
+        </p>
+      )}
+
+      <div className="ov-stats">
+        {stats.map((c) => {
+          const Icon = c.icon;
+          return (
+            <Link key={c.href} href={c.href} className={`ov-stat ov-stat--${c.tone}`}>
+              <span className="ov-stat__icon">
+                <Icon size={20} />
+              </span>
+              <span className="ov-stat__value">{c.value}</span>
+              <span className="ov-stat__label">{c.label}</span>
+              {c.sub && <span className="ov-stat__sub">{c.sub}</span>}
+              <ArrowUpRight size={16} className="ov-stat__go" />
+            </Link>
+          );
+        })}
       </div>
 
-      {/* Stats */}
-      <div className="stat-grid">
-        <div className="stat-card stat-card--blue">
-          <div className="stat-card__icon">
-            <svg
-              viewBox="0 0 24 24"
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-            >
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-            </svg>
-          </div>
-          <div className="stat-card__body">
-            <p className="stat-card__label">{t.dash.newInquiries}</p>
-            <p className="stat-card__value">{newCount}</p>
-          </div>
-        </div>
-        <div className="stat-card stat-card--amber">
-          <div className="stat-card__icon">
-            <svg
-              viewBox="0 0 24 24"
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <polyline points="12 6 12 12 16 14" />
-            </svg>
-          </div>
-          <div className="stat-card__body">
-            <p className="stat-card__label">{t.dash.inProgress}</p>
-            <p className="stat-card__value">{inProgressCount}</p>
-          </div>
-        </div>
-        <div className="stat-card stat-card--green">
-          <div className="stat-card__icon">
-            <svg
-              viewBox="0 0 24 24"
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-            >
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-              <polyline points="22 4 12 14.01 9 11.01" />
-            </svg>
-          </div>
-          <div className="stat-card__body">
-            <p className="stat-card__label">{t.dash.completed}</p>
-            <p className="stat-card__value">{doneCount}</p>
-          </div>
-        </div>
-        <div className="stat-card stat-card--violet">
-          <div className="stat-card__icon">
-            <svg
-              viewBox="0 0 24 24"
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-            >
-              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-              <path d="M3 6h18" />
-            </svg>
-          </div>
-          <div className="stat-card__body">
-            <p className="stat-card__label">{t.dash.totalProducts}</p>
-            <p className="stat-card__value">{products.length}</p>
-          </div>
-        </div>
-        <div className="stat-card stat-card--cyan">
-          <div className="stat-card__icon">
-            <svg
-              viewBox="0 0 24 24"
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-            >
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
-          </div>
-          <div className="stat-card__body">
-            <p className="stat-card__label">{t.dash.totalUsers}</p>
-            <p className="stat-card__value">{users.length}</p>
-          </div>
-        </div>
-        <div className="stat-card" style={{ borderLeft: "4px solid var(--indigo)" }}>
-          <div
-            className="stat-card__icon"
-            style={{ background: "var(--indigo-soft)", color: "var(--indigo)" }}
-          >
-            <svg
-              viewBox="0 0 24 24"
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-            >
-              <path d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-            </svg>
-          </div>
-          <div className="stat-card__body">
-            <p className="stat-card__label">{t.dash.categories ?? "Categories"}</p>
-            <p className="stat-card__value">{categories.length}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="dash-section">
-        <div className="dash-section__head">
-          <h2 className="dash-section__title">Quick Actions</h2>
-        </div>
-        <div className="dash-quick-grid">
-          <Link href={`${base}/products`} className="dash-quick-card">
-            <div className="dash-quick-card__icon">
-              <svg
-                viewBox="0 0 24 24"
-                width="16"
-                height="16"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              >
-                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-                <path d="M3 6h18" />
-              </svg>
-            </div>
-            <div>
-              <div className="dash-quick-card__label">{t.dash.products}</div>
-              <div className="dash-quick-card__sub">{products.length} total</div>
-            </div>
-          </Link>
-          <Link href={`${base}/inquiries`} className="dash-quick-card">
-            <div
-              className="dash-quick-card__icon"
-              style={{
-                background: newCount > 0 ? "rgba(20,87,217,0.12)" : undefined,
-                color: newCount > 0 ? "var(--blue)" : undefined,
-              }}
-            >
-              <svg
-                viewBox="0 0 24 24"
-                width="16"
-                height="16"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              >
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-              </svg>
-            </div>
-            <div>
-              <div className="dash-quick-card__label">{t.dash.inquiries}</div>
-              <div className="dash-quick-card__sub">{newCount} new</div>
-            </div>
-          </Link>
-          <Link href={`${base}/categories`} className="dash-quick-card">
-            <div className="dash-quick-card__icon">
-              <svg
-                viewBox="0 0 24 24"
-                width="16"
-                height="16"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              >
-                <path d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-              </svg>
-            </div>
-            <div>
-              <div className="dash-quick-card__label">{t.dash.categories ?? "Categories"}</div>
-              <div className="dash-quick-card__sub">{categories.length} total</div>
-            </div>
-          </Link>
-          <Link href={`${base}/users`} className="dash-quick-card">
-            <div className="dash-quick-card__icon">
-              <svg
-                viewBox="0 0 24 24"
-                width="16"
-                height="16"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              >
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                <circle cx="9" cy="7" r="4" />
-              </svg>
-            </div>
-            <div>
-              <div className="dash-quick-card__label">{t.dash.users}</div>
-              <div className="dash-quick-card__sub">{users.length} accounts</div>
-            </div>
-          </Link>
-          <Link href={`${base}/news`} className="dash-quick-card">
-            <div className="dash-quick-card__icon">
-              <svg
-                viewBox="0 0 24 24"
-                width="16"
-                height="16"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              >
-                <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2" />
-              </svg>
-            </div>
-            <div>
-              <div className="dash-quick-card__label">{t.dash.news ?? "News"}</div>
-              <div className="dash-quick-card__sub">Publish articles</div>
-            </div>
-          </Link>
-        </div>
-      </div>
-
-      {/* Recent Inquiries */}
-      <div className="dash-section">
-        <div className="dash-section__head">
-          <h2 className="dash-section__title">{t.dash.recentInquiries}</h2>
-          <Link href={`${base}/inquiries`} className="dash-section__link">
-            View all →
-          </Link>
-        </div>
-        {recent.length === 0 ? (
-          <div className="dash-empty">
-            <div className="dash-empty__icon">
-              <svg
-                viewBox="0 0 24 24"
-                width="24"
-                height="24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.75"
-                strokeLinecap="round"
-              >
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-              </svg>
-            </div>
-            <p>{t.dash.noData}</p>
-            <Link
-              href={`${base}/inquiries`}
-              className="btn btn--ghost btn--sm dash-empty__cta"
-              style={{ textDecoration: "none" }}
-            >
-              Go to Inquiries
+      <div className="ov-grid">
+        <section className="ov-panel ov-panel--wide">
+          <div className="ov-panel__head">
+            <h2>{t.dash.recentInquiries}</h2>
+            <Link href={`${base}/inquiries`} className="dash-section__link">
+              {t.common.viewAll} →
             </Link>
           </div>
-        ) : (
-          <div className="dash-table-wrap">
-            <table className="dash-table">
-              <thead>
-                <tr>
-                  <th>{t.dash.product}</th>
-                  <th>{t.dash.customer}</th>
-                  <th>{t.dash.phone}</th>
-                  <th>{t.dash.date}</th>
-                  <th>{t.dash.status}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recent.map((inq) => (
-                  <tr key={inq.id}>
-                    <td>{getProductName(inq, lang)}</td>
-                    <td>{inq.name}</td>
-                    <td>{inq.phone}</td>
-                    <td>{formatDate(inq.createdAt, lang as Locale)}</td>
-                    <td>
-                      <span
-                        className={`status-badge status-badge--${inq.status.toLowerCase().replace("_", "-")}`}
-                      >
-                        {getStatusLabel(inq.status, t)}
-                      </span>
-                    </td>
+          {recent.length === 0 ? (
+            <div className="dash-empty">
+              <div className="dash-empty__icon">
+                <MessageSquare size={24} />
+              </div>
+              <p>{t.dash.noData}</p>
+              <Link
+                href={`${base}/inquiries`}
+                className="btn btn--ghost btn--sm dash-empty__cta"
+                style={{ textDecoration: "none" }}
+              >
+                {t.dash.goToInquiries}
+              </Link>
+            </div>
+          ) : (
+            <div className="dash-table-wrap ov-table">
+              <table className="dash-table">
+                <thead>
+                  <tr>
+                    <th>{t.dash.product}</th>
+                    <th>{t.dash.customer}</th>
+                    <th>{t.dash.phone}</th>
+                    <th>{t.dash.date}</th>
+                    <th>{t.dash.status}</th>
                   </tr>
+                </thead>
+                <tbody>
+                  {recent.map((inq) => (
+                    <tr key={inq.id}>
+                      <td>{getProductName(inq, lang)}</td>
+                      <td>{inq.name}</td>
+                      <td>{inq.phone}</td>
+                      <td>{formatDate(inq.createdAt, lang as Locale)}</td>
+                      <td>
+                        <span
+                          className={`status-badge status-badge--${inq.status.toLowerCase().replace("_", "-")}`}
+                        >
+                          {getStatusLabel(inq.status, t)}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+
+        <aside className="ov-side">
+          <section className="ov-panel">
+            <div className="ov-panel__head">
+              <h2>{t.dash.inquiries}</h2>
+            </div>
+            <div className="ov-seg" aria-hidden="true">
+              {statusRows.map((r) => (
+                <span
+                  key={r.key}
+                  className={`ov-seg__bar ov-tone--${r.tone}`}
+                  style={{ width: `${pct(r.n)}%` }}
+                />
+              ))}
+            </div>
+            <ul className="ov-legend">
+              {statusRows.map((r) => (
+                <li key={r.key}>
+                  <span className={`ov-dot ov-tone--${r.tone}`} />
+                  <span>{r.label}</span>
+                  <strong>{r.n}</strong>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <section className="ov-panel">
+            <div className="ov-panel__head">
+              <h2>{t.dash.topJobs}</h2>
+              <Link href={`${base}/jobs`} className="dash-section__link">
+                {t.common.viewAll} →
+              </Link>
+            </div>
+            {topJobs.length === 0 ? (
+              <p className="ov-muted">{t.dash.noData}</p>
+            ) : (
+              <ul className="ov-bars">
+                {topJobs.map((j) => (
+                  <li key={j.id}>
+                    <div className="ov-bars__row">
+                      <span className="ov-bars__name">{j.title}</span>
+                      <strong>{j.applications}</strong>
+                    </div>
+                    <div className="ov-bars__track">
+                      <span style={{ width: `${(j.applications / maxApps) * 100}%` }} />
+                    </div>
+                  </li>
                 ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+              </ul>
+            )}
+          </section>
+        </aside>
       </div>
     </div>
   );

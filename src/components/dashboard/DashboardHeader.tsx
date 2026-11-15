@@ -1,14 +1,14 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { ChevronDown, LogOut } from "lucide-react";
+import Link from "next/link";
+import { ChevronDown, ExternalLink, LayoutDashboard, Lock, LogOut } from "lucide-react";
 import type { Dict } from "@/lib/i18n";
 import type { JwtUser } from "@/lib/server-auth";
 import { useLogoutFromDbMutation } from "@/redux/fetchers/auth/authApi";
 import { logout } from "@/redux/fetchers/auth/authSlice";
 import { useAppDispatch } from "@/redux/store";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -55,8 +55,15 @@ export default function DashboardHeader({ lang, t, user }: Props) {
   return (
     <header className="dash-header">
       <div className="dash-header__title">
+        <p className="dash-header__crumb">
+          {user.role === "ADMIN" ? t.dash.adminPanel : t.dash.userPanel}
+        </p>
         <h1>{title}</h1>
       </div>
+      <Link href={`/${lang}`} target="_blank" className="dash-header__site">
+        <ExternalLink size={14} aria-hidden="true" />
+        <span>{t.dash.publicSite}</span>
+      </Link>
       <div className="dash-header__menu">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -66,12 +73,16 @@ export default function DashboardHeader({ lang, t, user }: Props) {
                   {name[0].toUpperCase()}
                 </AvatarFallback>
               </Avatar>
+              <span className="dash-header__who">
+                <span className="dash-header__name">{name}</span>
+                <span className="dash-header__role">{role}</span>
+              </span>
               <ChevronDown size={15} className="dash-header__chevron" aria-hidden="true" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <div className="dmenu-head">
-              <Avatar className="dash-header__avatar">
+            <div className="dmenu-profile">
+              <Avatar className="dmenu-profile__avatar">
                 <AvatarFallback className="dash-header__avatar-fallback">
                   {name[0].toUpperCase()}
                 </AvatarFallback>
@@ -81,16 +92,36 @@ export default function DashboardHeader({ lang, t, user }: Props) {
                 <p className="dmenu-email">{user.email}</p>
               </div>
             </div>
-            <DropdownMenuSeparator />
             <DropdownMenuLabel>{t.dash.myAccount}</DropdownMenuLabel>
-            <div style={{ padding: "0 10px 6px" }}>
-              <Badge variant={roleKey === "admin" ? "default" : "success"}>
-                {role.toUpperCase()}
-              </Badge>
-            </div>
+            <DropdownMenuItem asChild>
+              <Link href={base}>
+                <span className="dmenu-icon">
+                  <LayoutDashboard size={15} aria-hidden="true" />
+                </span>
+                <span>{user.role === "ADMIN" ? t.dash.overview : t.dash.myDashboard}</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href={`${base}/change-password`}>
+                <span className="dmenu-icon">
+                  <Lock size={15} aria-hidden="true" />
+                </span>
+                <span>{t.dash.changePassword}</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href={`/${lang}`} target="_blank">
+                <span className="dmenu-icon">
+                  <ExternalLink size={15} aria-hidden="true" />
+                </span>
+                <span>{t.dash.publicSite}</span>
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem variant="danger" onClick={handleLogout}>
-              <LogOut size={15} aria-hidden="true" />
+              <span className="dmenu-icon">
+                <LogOut size={15} aria-hidden="true" />
+              </span>
               <span>{t.dash.logout}</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
