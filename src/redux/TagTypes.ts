@@ -8,6 +8,7 @@ export const tagTypes = {
   category: "category",
   job: "job",
   jobApplication: "jobApplication",
+  solution: "solution",
 } as const;
 
 export type TagType = (typeof tagTypes)[keyof typeof tagTypes];

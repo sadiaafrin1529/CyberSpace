@@ -404,6 +404,9 @@ textarea {
   box-shadow: var(--shadow-xs);
 }
 .lang__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 7px 10px;
   font-size: 0.76rem;
   font-weight: 700;
@@ -445,9 +448,19 @@ textarea {
   border-color: rgba(47, 107, 255, 0.3);
   box-shadow: 0 2px 8px rgba(47, 107, 255, 0.12);
 }
+/* SVG country flag (components/Flag.tsx) — replaces flag emoji, which Windows cannot render */
+.flag {
+  display: block;
+  flex: none;
+  width: 20px;
+  height: 14px;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(15, 32, 68, 0.14);
+}
 .lang-trigger__flag {
-  font-size: 1rem;
-  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  line-height: 0;
 }
 .lang-trigger__code {
   letter-spacing: 0.02em;
@@ -476,8 +489,9 @@ textarea {
   text-decoration: none;
 }
 .lang-menu__flag {
-  font-size: 1.05rem;
-  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  line-height: 0;
 }
 .lang-menu__name {
   flex: 1;
@@ -960,6 +974,24 @@ textarea {
   box-shadow: var(--shadow-blue);
 }
 
+/* Equal-height cards: each grid cell is a motion wrapper (FadeUp) that must stretch,
+   and the card inside must fill it. Without this a card is only as tall as its own text. */
+.catgrid > *,
+.newsgrid > *,
+.news-full-grid > *,
+.pgrid > * {
+  display: flex;
+  min-width: 0;
+}
+.catgrid > * > .catcard,
+.newsgrid > * > .news-full-card,
+.news-full-grid > * > .news-full-card,
+.pgrid > * > .pcard {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+}
+
 .catgrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -1062,6 +1094,14 @@ textarea {
   font-weight: 700;
   color: var(--navy);
   line-height: 1.35;
+  /* always reserve exactly two lines, clamp anything longer */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  height: 2.7em;
+  overflow-wrap: anywhere;
 }
 .catcard__count {
   font-size: 0.77rem;
@@ -1552,6 +1592,14 @@ textarea {
   font-size: 0.97rem;
   margin: 0;
   line-height: 1.42;
+  /* always reserve exactly one line, clamp anything longer */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  overflow: hidden;
+  height: 1.42em;
+  overflow-wrap: anywhere;
 }
 .pcard__name a {
   color: var(--navy);
@@ -1564,6 +1612,9 @@ textarea {
   margin: 0;
   color: var(--muted);
   font-size: 0.77rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .pcard__meta {
   display: flex;
@@ -2788,7 +2839,10 @@ textarea {
   border-radius: 50%;
   color: var(--blue);
   background: var(--blue-soft);
-  transition: transform var(--dur) var(--ease), background var(--dur) var(--ease), color var(--dur) var(--ease);
+  transition:
+    transform var(--dur) var(--ease),
+    background var(--dur) var(--ease),
+    color var(--dur) var(--ease);
 }
 .faq-item.is-open .faq-q svg {
   transform: rotate(180deg);
@@ -3166,7 +3220,7 @@ textarea {
 /* ── Solutions Grid ──────────────────────────────────────────── */
 .sol-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 22px;
 }
 .sol-card {
@@ -3255,6 +3309,36 @@ textarea {
 }
 .sol-card__link:hover {
   color: var(--blue-bright);
+}
+/* Card titles link to the solution's detail page without changing how they look */
+.sol-card__title a {
+  color: inherit;
+  text-decoration: none;
+}
+.sol-card__title a:hover {
+  color: var(--blue);
+}
+
+/* ── Solution detail page ────────────────────────────────────── */
+.sol-detail {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+@media (min-width: 900px) {
+  .sol-detail {
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 36px;
+  }
+}
+.sol-detail__main .prose {
+  margin: 0 0 16px;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+.sol-detail__aside:hover {
+  transform: none;
 }
 
 /* ── Services Grid ───────────────────────────────────────────── */
@@ -3510,8 +3594,10 @@ a.partner-card {
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
+  height: 1.25rem; /* fixed row, so a post without a date does not shift the title */
 }
 .news-full-card__date {
+  line-height: 1.25rem;
   font-size: 0.76rem;
   color: var(--muted);
   white-space: nowrap;
@@ -3522,13 +3608,33 @@ a.partner-card {
   color: var(--navy);
   margin: 0;
   line-height: 1.4;
+  /* always reserve exactly two lines, clamp anything longer */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  height: 2.8em;
+  overflow-wrap: anywhere;
 }
 .news-full-card__excerpt {
   font-size: 0.88rem;
   color: var(--muted);
   line-height: 1.7;
   margin: 0;
-  flex: 1;
+  /* always reserve exactly two lines, clamp anything longer */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  height: 3.4em;
+  flex: none;
+  overflow-wrap: anywhere;
+}
+/* "Read more" always sits at the bottom edge of the card */
+.news-full-card__body .sol-card__link {
+  margin-top: auto;
 }
 
 /* ── Breadcrumb ─────────────────────────────────────────────── */
@@ -4716,7 +4822,10 @@ a.partner-card {
   text-decoration: none;
   border: 1px solid var(--border);
   background: var(--surface);
-  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+  transition:
+    color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
+    background var(--dur) var(--ease);
 }
 .dash-header__site:hover {
   color: var(--blue);
@@ -4822,7 +4931,9 @@ a.partner-card {
   min-width: 272px;
   background: #fff;
   border-radius: var(--radius-xl);
-  box-shadow: 0 18px 48px rgba(10, 27, 61, 0.16), 0 2px 6px rgba(10, 27, 61, 0.06);
+  box-shadow:
+    0 18px 48px rgba(10, 27, 61, 0.16),
+    0 2px 6px rgba(10, 27, 61, 0.06);
   border: 1px solid var(--border);
   padding: 8px;
   z-index: 60;
@@ -4913,7 +5024,9 @@ a.partner-card {
   border-radius: 9px;
   background: var(--surface-2);
   color: var(--muted);
-  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+  transition:
+    background var(--dur) var(--ease),
+    color var(--dur) var(--ease);
 }
 .dmenu-item[data-highlighted] .dmenu-icon {
   background: var(--blue-soft);
@@ -6812,7 +6925,10 @@ a.partner-card {
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
   box-shadow: 0 1px 3px rgba(10, 27, 61, 0.05);
-  transition: box-shadow var(--dur) var(--ease), border-color var(--dur) var(--ease), transform var(--dur) var(--ease);
+  transition:
+    box-shadow var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
 }
 .job-card::before {
   content: "";
@@ -7430,7 +7546,9 @@ td .ui-select-trigger {
   object-fit: cover;
   object-position: center;
   opacity: 0;
-  transition: opacity 0.4s var(--ease), transform 0.6s var(--ease);
+  transition:
+    opacity 0.4s var(--ease),
+    transform 0.6s var(--ease);
 }
 .office-map__img.is-loaded {
   opacity: 1;
@@ -7557,7 +7675,9 @@ td .ui-select-trigger {
   background: var(--surface);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
-  transition: box-shadow 0.3s var(--ease), border-color 0.3s var(--ease);
+  transition:
+    box-shadow 0.3s var(--ease),
+    border-color 0.3s var(--ease);
 }
 .pcar__logo img {
   width: 100%;
@@ -7584,7 +7704,9 @@ td .ui-select-trigger {
   color: var(--blue);
   cursor: pointer;
   box-shadow: var(--shadow-sm);
-  transition: background 0.2s var(--ease), color 0.2s var(--ease);
+  transition:
+    background 0.2s var(--ease),
+    color 0.2s var(--ease);
 }
 .pcar__nav:hover {
   background: var(--blue);
@@ -7744,18 +7866,36 @@ td .ui-select-trigger {
   box-shadow: var(--shadow-xs);
   text-decoration: none;
   color: inherit;
-  transition: box-shadow var(--dur) var(--ease), transform var(--dur) var(--ease), border-color var(--dur) var(--ease);
+  transition:
+    box-shadow var(--dur) var(--ease),
+    transform var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
 }
 .ov-stat:hover {
   transform: translateY(-3px);
   border-color: var(--tone);
   box-shadow: 0 12px 28px rgba(10, 27, 61, 0.1);
 }
-.ov-stat--violet { --tone: var(--violet); --tone-soft: var(--violet-soft); }
-.ov-stat--indigo { --tone: var(--indigo); --tone-soft: var(--indigo-soft); }
-.ov-stat--cyan { --tone: var(--cyan); --tone-soft: var(--cyan-soft); }
-.ov-stat--amber { --tone: var(--amber); --tone-soft: var(--amber-soft); }
-.ov-stat--green { --tone: var(--green); --tone-soft: var(--green-soft); }
+.ov-stat--violet {
+  --tone: var(--violet);
+  --tone-soft: var(--violet-soft);
+}
+.ov-stat--indigo {
+  --tone: var(--indigo);
+  --tone-soft: var(--indigo-soft);
+}
+.ov-stat--cyan {
+  --tone: var(--cyan);
+  --tone-soft: var(--cyan-soft);
+}
+.ov-stat--amber {
+  --tone: var(--amber);
+  --tone-soft: var(--amber-soft);
+}
+.ov-stat--green {
+  --tone: var(--green);
+  --tone-soft: var(--green-soft);
+}
 .ov-stat__icon {
   width: 42px;
   height: 42px;
@@ -7793,7 +7933,9 @@ td .ui-select-trigger {
   right: 18px;
   color: var(--muted);
   opacity: 0;
-  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+  transition:
+    opacity var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
 }
 .ov-stat:hover .ov-stat__go {
   opacity: 1;
@@ -7841,9 +7983,15 @@ td .ui-select-trigger {
   font-size: 0.88rem;
   color: var(--muted);
 }
-.ov-tone--blue { background: var(--blue); }
-.ov-tone--amber { background: var(--amber); }
-.ov-tone--green { background: var(--green); }
+.ov-tone--blue {
+  background: var(--blue);
+}
+.ov-tone--amber {
+  background: var(--amber);
+}
+.ov-tone--green {
+  background: var(--green);
+}
 .ov-seg {
   display: flex;
   height: 10px;
@@ -7930,5 +8078,691 @@ td .ui-select-trigger {
   }
   .ov-stat {
     padding: 16px;
+  }
+}
+
+/* ================================================================
+   SEARCH MODAL  (components/SearchModal.tsx)
+   Compact, small-type layout. Desktop: centred card. Phone: full screen.
+   ================================================================ */
+@keyframes smodalFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes smodalIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -8px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+@keyframes smodalInFull {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes srowIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes smodalSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.smodal__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(7, 20, 40, 0.5);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  animation: smodalFade 0.18s var(--ease) both;
+}
+.smodal {
+  position: fixed;
+  z-index: 10001;
+  left: 50%;
+  top: max(40px, 8vh);
+  transform: translateX(-50%);
+  width: min(640px, calc(100vw - 24px));
+  max-height: min(74vh, 600px);
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow:
+    0 24px 64px rgba(10, 27, 61, 0.22),
+    0 4px 16px rgba(10, 27, 61, 0.08);
+  overflow: hidden;
+  outline: none;
+  animation: smodalIn 0.2s var(--ease-out) both;
+}
+.smodal__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Input bar */
+.smodal__bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: none;
+  padding: 10px 12px 10px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.smodal__bar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--blue-bright), var(--blue-mid) 60%, transparent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s var(--ease-out);
+}
+.smodal__bar:focus-within::after {
+  transform: scaleX(1);
+}
+.smodal__bar-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  color: var(--blue);
+}
+.smodal__spin {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--blue-soft);
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: smodalSpin 0.7s linear infinite;
+}
+.smodal__input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--navy);
+  padding: 8px 0;
+}
+.smodal__input::placeholder {
+  color: #94a0b5;
+  font-weight: 400;
+}
+.smodal__clear {
+  flex: none;
+  border: 0;
+  cursor: pointer;
+  background: var(--blue-soft);
+  color: var(--blue);
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  transition: background var(--dur) var(--ease);
+}
+.smodal__clear:hover {
+  background: #d6e3fb;
+}
+.smodal__close {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  border-radius: 9px;
+  cursor: pointer;
+  transition:
+    background var(--dur) var(--ease),
+    color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+.smodal__close svg {
+  width: 14px;
+  height: 14px;
+}
+.smodal__close:hover {
+  background: var(--blue-soft);
+  color: var(--blue);
+  border-color: rgba(47, 107, 255, 0.3);
+}
+
+/* Scrolling body */
+.smodal__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  padding: 4px 8px 10px;
+}
+.smodal__section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 8px 6px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #7a889e;
+}
+.smodal__section--sticky {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  margin: 0 -8px;
+  padding: 10px 16px 6px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.smodal__viewall {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--blue);
+  text-decoration: none;
+}
+.smodal__viewall:hover {
+  color: var(--blue-bright);
+}
+
+/* Initial / empty / error states */
+.smodal__hero,
+.smodal__state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 22px 20px 6px;
+  text-align: center;
+}
+.smodal__hero p,
+.smodal__state p {
+  margin: 0;
+}
+.smodal__hero-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 6px;
+  border-radius: 50%;
+  color: var(--blue);
+  background: radial-gradient(circle at 30% 25%, #ffffff 0%, var(--blue-soft) 75%);
+  box-shadow:
+    0 0 0 5px rgba(47, 107, 255, 0.06),
+    0 4px 12px rgba(47, 107, 255, 0.14);
+}
+.smodal__state-title {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--navy);
+}
+.smodal__state-sub {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.smodal__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 2px 8px 4px;
+}
+.smodal__chip {
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  color: var(--navy);
+  font-size: 0.76rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    background var(--dur) var(--ease),
+    color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+button.smodal__chip {
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+.smodal__chip:hover {
+  background: var(--blue-soft);
+  color: var(--blue);
+  border-color: rgba(47, 107, 255, 0.3);
+}
+
+/* Result rows: compact horizontal cards */
+.srow-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.srow-list > li {
+  animation: srowIn 0.22s var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 22ms);
+}
+.srow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 60px;
+  padding: 0 10px 0 8px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  color: inherit;
+  text-decoration: none;
+  transition:
+    background var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+.srow:hover,
+.srow.is-active {
+  background: var(--surface-2);
+  border-color: var(--border);
+}
+.srow.is-active {
+  background: linear-gradient(90deg, rgba(47, 107, 255, 0.05), var(--surface-2) 45%);
+  border-color: rgba(47, 107, 255, 0.2);
+}
+.srow.is-active::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: 14px;
+  bottom: 14px;
+  width: 3px;
+  border-radius: 3px;
+  background: linear-gradient(var(--blue-bright), var(--blue-mid));
+}
+.srow__thumb {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  padding: 4px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+}
+.srow__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  transition: transform var(--dur-md) var(--ease-out);
+}
+.srow:hover .srow__thumb img,
+.srow.is-active .srow__thumb img {
+  transform: scale(1.06);
+}
+.srow__thumb .pimg {
+  width: 100%;
+  height: 100%;
+}
+.srow__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.srow__name {
+  font-size: 0.84rem;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--navy);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.srow__meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  font-size: 0.7rem;
+  line-height: 1.2;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.srow__brand {
+  flex: none;
+  font-weight: 600;
+  color: #3d4f6b;
+}
+.srow__tag {
+  flex: none;
+  max-width: 45%;
+  padding: 1px 7px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-radius: var(--radius-full);
+  background: var(--blue-soft);
+  color: var(--blue);
+  font-size: 0.64rem;
+  font-weight: 600;
+}
+.srow__sku {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #8896ab;
+}
+.srow mark {
+  background: rgba(47, 107, 255, 0.14);
+  color: var(--blue);
+  border-radius: 3px;
+  padding: 0 1px;
+}
+.srow__side {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+  text-align: right;
+}
+.srow__side .price {
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+.srow__side .stock {
+  font-size: 0.6rem;
+  padding: 1px 7px;
+}
+.srow__arrow {
+  flex: none;
+  color: var(--blue);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition:
+    opacity var(--dur) var(--ease),
+    transform var(--dur) var(--ease-spring);
+}
+.srow:hover .srow__arrow,
+.srow.is-active .srow__arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+.srow--skeleton {
+  pointer-events: none;
+}
+.srow--skeleton .srow__main {
+  gap: 8px;
+}
+.skel--line {
+  display: block;
+  height: 11px;
+}
+.skel--thin {
+  height: 8px;
+}
+
+/* Keyboard hints */
+.smodal__foot {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 16px;
+  border-top: 1px solid var(--border);
+  background: var(--surface-2);
+  font-size: 0.68rem;
+  color: var(--muted);
+}
+.smodal__foot span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.smodal__foot kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border: 1px solid var(--border-2);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: var(--surface);
+  color: var(--navy);
+  font: inherit;
+  font-size: 0.64rem;
+  font-weight: 600;
+}
+
+/* Phone: full-screen sheet, no keyboard hints */
+@media (max-width: 560px) {
+  .smodal {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100dvh;
+    max-height: none;
+    transform: none;
+    border: 0;
+    border-radius: 0;
+    animation: smodalInFull 0.2s var(--ease-out) both;
+  }
+  .smodal__bar {
+    padding: 8px 10px 8px 14px;
+  }
+  .smodal__input {
+    font-size: 1rem; /* 16px stops iOS from zooming the page on focus */
+  }
+  .smodal__body {
+    padding: 2px 6px 12px;
+  }
+  .smodal__section--sticky {
+    margin: 0 -6px;
+    padding: 10px 14px 6px;
+  }
+  .srow {
+    gap: 10px;
+    padding: 0 6px;
+  }
+  .srow__arrow,
+  .srow__side .stock,
+  .srow__sku {
+    display: none;
+  }
+  .smodal__foot {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .smodal,
+  .smodal__overlay,
+  .srow-list > li {
+    animation: none;
+  }
+  .smodal__bar::after {
+    transition: none;
+  }
+  .smodal__spin {
+    animation-duration: 1.6s;
+  }
+}
+
+/* ================================================================
+   SOLUTIONS GRID: identical collapsed cards + per-card See more
+   (components/solutions/SolutionCard.tsx)
+   Every collapsed card has the same fixed structure, so all cards are the same height:
+   2-line title, 2-line description, room for 5 single-line key points, a fixed toggle slot.
+   ================================================================ */
+.sol-grid {
+  align-items: start; /* an expanded card grows alone; its row neighbours keep their height */
+  --sol-li: 1.32rem; /* one key point: 0.88rem font x 1.5 line-height */
+  --sol-gap: 14px; /* .sol-card flex gap */
+  --sol-toggle: 28px;
+}
+.sol-grid .sol-card__title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  line-height: 1.3;
+  height: 2.6em;
+}
+.sol-grid .sol-card__desc {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  height: 3.3em; /* 2 lines x 1.65 line-height */
+}
+
+/* First five key points: five reserved slots, one line each */
+.sol-grid .sol-card__list {
+  flex: none;
+}
+.sol-grid .sol-card > .sol-card__list {
+  min-height: calc(5 * var(--sol-li) + 4 * 7px);
+}
+.sol-grid .sol-card__list li {
+  height: var(--sol-li);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sol-grid .sol-card__list li::before {
+  top: 0.5em;
+}
+/* Expanded card: full text, wrapping allowed */
+.sol-grid .sol-card.is-open .sol-card__list li {
+  height: auto;
+  white-space: normal;
+  overflow: visible;
+  overflow-wrap: anywhere;
+}
+
+/* Remaining key points: zero height when collapsed (its flex gap is cancelled), animated open */
+.sol-card__more {
+  display: grid;
+  grid-template-rows: 0fr;
+  margin-top: calc(var(--sol-gap, 14px) * -1);
+  visibility: hidden;
+  transition:
+    grid-template-rows 0.3s var(--ease),
+    visibility 0s linear 0.3s;
+}
+.sol-card.is-open .sol-card__more {
+  grid-template-rows: 1fr;
+  visibility: visible;
+  transition-delay: 0s;
+}
+.sol-card__more-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+.sol-card__more-inner > .sol-card__list {
+  padding-top: 7px;
+}
+
+/* See more / See less: same fixed slot on every card */
+.sol-card__toggle-slot {
+  display: flex;
+  align-items: center;
+  height: var(--sol-toggle, 28px);
+}
+.sol-card__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 100%;
+  padding: 0 2px;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--sol-c, var(--blue));
+  cursor: pointer;
+  border-radius: 6px;
+  transition: opacity var(--dur) var(--ease);
+}
+.sol-card__toggle:hover {
+  opacity: 0.75;
+}
+.sol-card__toggle:focus-visible {
+  outline: 2px solid var(--sol-c, var(--blue));
+  outline-offset: 2px;
+}
+.sol-card__toggle svg {
+  transition: transform 0.25s var(--ease);
+}
+.sol-card.is-open .sol-card__toggle svg {
+  transform: rotate(180deg);
+}
+
+@media (max-width: 639px) {
+  .sol-grid {
+    --sol-toggle: 40px; /* bigger tap target on phones; still identical on every card */
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sol-card__more,
+  .sol-card__toggle svg {
+    transition: none;
   }
 }

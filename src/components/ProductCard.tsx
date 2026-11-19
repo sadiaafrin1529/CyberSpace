@@ -48,7 +48,9 @@ export default function ProductCard({
       </Link>
       <div className="pcard__body">
         <h3 className="pcard__name">
-          <Link href={href}>{displayName}</Link>
+          <Link href={href} title={displayName}>
+            {displayName}
+          </Link>
         </h3>
         <p className="pcard__sku">
           {t.common.partNo}: {product.sku}

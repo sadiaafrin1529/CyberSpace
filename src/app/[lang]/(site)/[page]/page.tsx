@@ -6,6 +6,9 @@ import { notFound, redirect } from "next/navigation";
 import { getDict, isLocale, type Locale } from "@/lib/i18n";
 import { pageMeta } from "@/lib/seo";
 import { FadeDown, FadeLeft, FadeRight, FadeUp, ZoomIn } from "@/components/Motion";
+import { CACHE_TAGS, serverGet } from "@/lib/server-api";
+import type { Solution } from "@/redux/fetchers/solution/solutionApi";
+import SolutionCard from "@/components/solutions/SolutionCard";
 
 const PAGES = ["about", "solutions", "contact"] as const;
 type PageKey = (typeof PAGES)[number];
@@ -194,216 +197,6 @@ const TEAM_STATS = [
   { num: "5", label: { en: "Project mgrs", az: "Layihə müdirləri", ru: "PM" }, color: "#d97706" },
 ];
 
-const svg = (children: React.ReactNode) => (
-  <svg
-    viewBox="0 0 24 24"
-    width="30"
-    height="30"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.6"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    {children}
-  </svg>
-);
-
-const SOLUTIONS = [
-  {
-    color: "blue",
-    icon: svg(
-      <>
-        <rect x="2" y="3" width="20" height="5" rx="1" />
-        <rect x="2" y="10" width="20" height="5" rx="1" />
-        <rect x="2" y="17" width="20" height="5" rx="1" />
-        <circle cx="19" cy="5.5" r="1" fill="currentColor" stroke="none" />
-        <circle cx="19" cy="12.5" r="1" fill="currentColor" stroke="none" />
-        <circle cx="19" cy="19.5" r="1" fill="currentColor" stroke="none" />
-      </>,
-    ),
-    title: {
-      en: "Information Technology Systems",
-      az: "İnformasiya Texnologiyaları Sistemləri",
-      ru: "Информационные технологии",
-    },
-    desc: {
-      en: "IT infrastructure, servers and storage solutions",
-      az: "İT infrastruktur, serverlər və yaddaş həlləri",
-      ru: "ИТ-инфраструктура, серверы и системы хранения данных",
-    },
-    features: {
-      en: ["Corporate networks", "Cybersecurity", "Cloud solutions", "Software solutions"],
-      az: [
-        "Korporativ şəbəkələr",
-        "Kibertəhlükəsizlik",
-        "Bulud həlləri",
-        "Proqram təminatı həlləri",
-      ],
-      ru: ["Корпоративные сети", "Кибербезопасность", "Облачные решения", "Программные решения"],
-    },
-  },
-  {
-    color: "orange",
-    icon: svg(<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />),
-    title: { en: "Electrical Systems", az: "Elektrik Sistemləri", ru: "Электрические системы" },
-    desc: {
-      en: "Power distribution and protection",
-      az: "Enerji paylanması və mühafizəsi",
-      ru: "Распределение и защита электропитания",
-    },
-    features: {
-      en: [
-        "Low- and medium-voltage infrastructure",
-        "Distribution panels",
-        "Lighting",
-        "Electrical engineering",
-      ],
-      az: [
-        "Aşağı və orta gərginlikli infrastruktur",
-        "Paylayıcı şitlər",
-        "İşıqlandırma",
-        "Elektrik mühəndisliyi",
-      ],
-      ru: [
-        "Инфраструктура низкого и среднего напряжения",
-        "Распределительные щиты",
-        "Освещение",
-        "Электротехнический инжиниринг",
-      ],
-    },
-  },
-  {
-    color: "cyan",
-    icon: svg(
-      <>
-        <circle cx="12" cy="12" r="2" />
-        <path d="M12 10c0-4 1-7 4-7 2 0 3 2 2 4-1 2-3 3-6 3z" />
-        <path d="M14 12c4 0 7 1 7 4 0 2-2 3-4 2-2-1-3-3-3-6z" />
-        <path d="M12 14c0 4-1 7-4 7-2 0-3-2-2-4 1-2 3-3 6-3z" />
-        <path d="M10 12c-4 0-7-1-7-4 0-2 2-3 4-2 2 1 3 3 3 6z" />
-      </>,
-    ),
-    title: {
-      en: "Mechanical Systems & HVAC",
-      az: "Mexaniki Sistemlər və HVAC",
-      ru: "Механические системы и HVAC",
-    },
-    desc: {
-      en: "Climate control and mechanical works",
-      az: "İqlim nəzarəti və mexaniki işlər",
-      ru: "Климат-контроль и механические работы",
-    },
-    features: {
-      en: ["Ventilation", "Air conditioning", "Heating and plumbing", "Technical maintenance"],
-      az: ["Ventilyasiya", "Kondisioner", "İstilik və santexnika", "Texniki xidmət"],
-      ru: [
-        "Вентиляция",
-        "Кондиционирование",
-        "Отопление и водоснабжение",
-        "Техническое обслуживание",
-      ],
-    },
-  },
-  {
-    color: "red",
-    icon: svg(
-      <>
-        <path d="M23 7l-7 5 7 5V7z" />
-        <rect x="1" y="5" width="15" height="14" rx="2" />
-      </>,
-    ),
-    title: { en: "Low-Current Systems", az: "Zəif Cərəyan Sistemləri", ru: "Слаботочные системы" },
-    desc: {
-      en: "Integrated building infrastructure",
-      az: "İnteqrasiya olunmuş bina infrastrukturu",
-      ru: "Интегрированная инфраструктура зданий",
-    },
-    features: {
-      en: [
-        "Video surveillance",
-        "Access control",
-        "Structured cabling",
-        "Intercom and network systems",
-      ],
-      az: [
-        "Video müşahidə",
-        "Giriş nəzarəti",
-        "Struktur kabelləmə",
-        "Domofon və şəbəkə sistemləri",
-      ],
-      ru: [
-        "Видеонаблюдение",
-        "Контроль доступа",
-        "Структурированные кабельные сети",
-        "Домофонные и сетевые системы",
-      ],
-    },
-  },
-  {
-    color: "violet",
-    icon: svg(<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />),
-    title: {
-      en: "Fire Protection Systems",
-      az: "Yanğından Mühafizə Sistemləri",
-      ru: "Системы пожарной защиты",
-    },
-    desc: {
-      en: "Project-based fire safety",
-      az: "Layihə əsaslı yanğın təhlükəsizliyi",
-      ru: "Пожарная безопасность на основе проектов",
-    },
-    features: {
-      en: ["Fire detection", "Alarm", "Suppression", "Evacuation and system integration"],
-      az: [
-        "Yanğın aşkarlanması",
-        "Siqnalizasiya",
-        "Yanğınsöndürmə",
-        "Təxliyə və sistem inteqrasiyası",
-      ],
-      ru: ["Обнаружение пожара", "Сигнализация", "Пожаротушение", "Эвакуация и интеграция систем"],
-    },
-  },
-  {
-    color: "green",
-    icon: svg(
-      <>
-        <circle cx="12" cy="12" r="3" />
-        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-      </>,
-    ),
-    title: {
-      en: "Automation & Smart Systems",
-      az: "Avtomatlaşdırma və Ağıllı Sistemlər",
-      ru: "Автоматизация и умные системы",
-    },
-    desc: {
-      en: "BMS, SCADA, IoT and control solutions",
-      az: "BMS, SCADA, IoT və idarəetmə həlləri",
-      ru: "BMS, SCADA, IoT и решения для управления",
-    },
-    features: {
-      en: ["BMS", "SCADA", "Smart buildings and IoT", "Integrated control solutions"],
-      az: ["BMS", "SCADA", "Ağıllı binalar və IoT", "İnteqrasiya olunmuş idarəetmə həlləri"],
-      ru: ["BMS", "SCADA", "Умные здания и IoT", "Интегрированные решения для управления"],
-    },
-  },
-];
-
-const INDUSTRIES = [
-  { icon: "🏦", name: { en: "Banking & Finance", az: "Bank & Maliyyə", ru: "Банки и финансы" } },
-  { icon: "⛽", name: { en: "Oil & Gas", az: "Neft & Qaz", ru: "Нефть и газ" } },
-  { icon: "🏥", name: { en: "Healthcare", az: "Səhiyyə", ru: "Здравоохранение" } },
-  { icon: "🏛️", name: { en: "Government", az: "Dövlət", ru: "Госсектор" } },
-  {
-    icon: "✈️",
-    name: { en: "Transport & Logistics", az: "Nəqliyyat", ru: "Транспорт и логистика" },
-  },
-  { icon: "🎓", name: { en: "Education", az: "Təhsil", ru: "Образование" } },
-  { icon: "📡", name: { en: "Telecom", az: "Telekommunikasiya", ru: "Телеком" } },
-  { icon: "🏗️", name: { en: "Construction", az: "İnşaat", ru: "Строительство" } },
-];
-
 const CONTACT_INFO = [
   {
     icon: (
@@ -538,6 +331,10 @@ const FAQS = [
   },
 ];
 
+/** null (not []) on failure, so the page can tell "backend down" from "no solutions yet". */
+const fetchActiveSolutions = () =>
+  serverGet<Solution[] | null>("/solutions/active", null, [CACHE_TAGS.solutions]);
+
 /* ── Render ──────────────────────────────────────────────────── */
 export default async function InfoPage({
   params,
@@ -551,6 +348,7 @@ export default async function InfoPage({
   const t = getDict(lang);
   const key = page as PageKey;
   const L = lang as Locale;
+  const solutions = key === "solutions" ? await fetchActiveSolutions() : null;
 
   return (
     <>
@@ -700,56 +498,33 @@ export default async function InfoPage({
                 }
               </p>
             </FadeUp>
-            <div className="sol-grid">
-              {SOLUTIONS.map((s, i) => (
-                <FadeUp key={i} delay={(i % 3) * 0.07} className={`sol-card sol-card--${s.color}`}>
-                  <div className="sol-card__icon">{s.icon}</div>
-                  <h3 className="sol-card__title">{s.title[L]}</h3>
-                  <p className="sol-card__desc">{s.desc[L]}</p>
-                  <ul className="sol-card__list">
-                    {s.features[L].map((f) => (
-                      <li key={f}>{f}</li>
-                    ))}
-                  </ul>
-                  <Link href={`/${lang}/shop`} className="sol-card__link">
-                    {
-                      {
-                        en: "Browse products →",
-                        az: "Məhsullara bax →",
-                        ru: "Смотреть продукты →",
-                      }[L]
-                    }
-                  </Link>
-                </FadeUp>
-              ))}
-            </div>
-          </section>
-
-          <section className="info-alt-section">
-            <div className="container">
-              <FadeUp className="info-section-head">
-                <p className="eyebrow cats-eyebrow">
-                  {{ en: "Who we serve", az: "Kimə xidmət edirik", ru: "Кому мы помогаем" }[L]}
-                </p>
-                <h2>
+            {solutions === null ? (
+              <p className="muted" role="alert">
+                {
                   {
-                    {
-                      en: "Industries We Serve",
-                      az: "Xidmət Etdiyimiz Sənayeler",
-                      ru: "Отрасли, которым мы помогаем",
-                    }[L]
-                  }
-                </h2>
-              </FadeUp>
-              <div className="industry-grid">
-                {INDUSTRIES.map((ind, i) => (
-                  <ZoomIn key={i} delay={(i % 4) * 0.05} className="industry-card">
-                    <div className="industry-card__icon">{ind.icon}</div>
-                    <div className="industry-card__name">{ind.name[L]}</div>
-                  </ZoomIn>
+                    en: "Solutions could not be loaded right now. Please try again shortly.",
+                    az: "Həllər hazırda yüklənə bilmədi. Zəhmət olmasa bir az sonra yenidən cəhd edin.",
+                    ru: "Не удалось загрузить решения. Пожалуйста, повторите попытку позже.",
+                  }[L]
+                }
+              </p>
+            ) : solutions.length === 0 ? (
+              <p className="muted">
+                {
+                  {
+                    en: "No solutions are published yet.",
+                    az: "Hələ heç bir həll dərc edilməyib.",
+                    ru: "Решения пока не опубликованы.",
+                  }[L]
+                }
+              </p>
+            ) : (
+              <div className="sol-grid">
+                {solutions.map((s, i) => (
+                  <SolutionCard key={s.id} solution={s} delay={(i % 3) * 0.07} />
                 ))}
               </div>
-            </div>
+            )}
           </section>
         </div>
       )}
@@ -818,12 +593,16 @@ export default async function InfoPage({
             <FadeUp>
               <OfficeMap
                 title={{ en: "Our Office", az: "Ofisimiz", ru: "Наш офис" }[L]}
-                directionsLabel={{ en: "Get Directions", az: "Yol tarifi al", ru: "Построить маршрут" }[L]}
-                unavailableLabel={{
-                  en: "The map is currently unavailable.",
-                  az: "Xəritə hazırda əlçatan deyil.",
-                  ru: "Карта сейчас недоступна.",
-                }[L]}
+                directionsLabel={
+                  { en: "Get Directions", az: "Yol tarifi al", ru: "Построить маршрут" }[L]
+                }
+                unavailableLabel={
+                  {
+                    en: "The map is currently unavailable.",
+                    az: "Xəritə hazırda əlçatan deyil.",
+                    ru: "Карта сейчас недоступна.",
+                  }[L]
+                }
               />
             </FadeUp>
           </section>
