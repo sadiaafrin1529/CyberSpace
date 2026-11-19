@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
-import { LOCALES, LOCALE_LABEL, LOCALE_NAME, LOCALE_FLAG, type Locale } from "@/lib/i18n";
+import { LOCALES, LOCALE_LABEL, LOCALE_NAME, type Locale } from "@/lib/i18n";
 import { useLang } from "@/lib/useLang";
+import Flag from "./Flag";
 import Logo from "./Logo";
 import { useAuthUser } from "@/redux/fetchers/auth/authSlice";
 import {
@@ -15,6 +17,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+
+// Loaded on first click only, so the header bundle stays small.
+const SearchModal = dynamic(() => import("./SearchModal"), { ssr: false });
 
 const NAV = [
   ["home", ""],
@@ -33,6 +38,8 @@ export default function Header() {
   const user = useAuthUser();
   const pathname = usePathname() || `/${lang}`;
   const [open, setOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchLoaded, setSearchLoaded] = useState(false);
   const base = `/${lang}`;
   const authHref = user ? `${base}/dashboard` : `${base}/login`;
   const authLabel = user ? t.nav.dashboard : t.nav.login;
@@ -93,23 +100,28 @@ export default function Header() {
 
         <div className="header__tools">
           {/* Search — hidden on small mobile via CSS */}
-          <Link
-            href={`${base}/shop`}
+          <button
+            type="button"
             className="iconbtn header__search"
             aria-label={t.common.search}
+            aria-haspopup="dialog"
+            onClick={() => {
+              setSearchLoaded(true);
+              setSearchOpen(true);
+            }}
           >
             <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
               <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" strokeWidth="2" />
               <path d="m16 16 5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
-          </Link>
+          </button>
 
           {/* Language switcher — desktop header */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button type="button" className="lang-trigger" aria-label={t.common.language}>
                 <span className="lang-trigger__flag" aria-hidden="true">
-                  {LOCALE_FLAG[lang]}
+                  <Flag locale={lang} />
                 </span>
                 <span className="lang-trigger__code">{LOCALE_LABEL[lang]}</span>
                 <ChevronDown size={14} className="lang-trigger__chevron" aria-hidden="true" />
@@ -125,7 +137,7 @@ export default function Header() {
                     aria-current={l === lang ? "true" : undefined}
                   >
                     <span className="lang-menu__flag" aria-hidden="true">
-                      {LOCALE_FLAG[l]}
+                      <Flag locale={l} />
                     </span>
                     <span className="lang-menu__name">{LOCALE_NAME[l]}</span>
                   </Link>
@@ -151,6 +163,8 @@ export default function Header() {
           </button>
         </div>
       </div>
+
+      {searchLoaded && <SearchModal open={searchOpen} onOpenChange={setSearchOpen} />}
 
       {/* Dark overlay — closes menu on click */}
       <AnimatePresence>
@@ -199,7 +213,7 @@ export default function Header() {
                     aria-current={l === lang ? "true" : undefined}
                     onClick={close}
                   >
-                    <span aria-hidden="true">{LOCALE_FLAG[l]}</span> {LOCALE_LABEL[l]}
+                    <Flag locale={l} /> {LOCALE_LABEL[l]}
                   </Link>
                 ))}
               </div>

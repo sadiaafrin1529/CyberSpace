@@ -82,7 +82,7 @@ export default async function NewsListPage({ params }: { params: Promise<{ lang:
                         )}
                       </div>
                       <h3 className="news-full-card__title">{trans?.title ?? n.slug}</h3>
-                      {trans?.excerpt && <p className="news-full-card__excerpt">{trans.excerpt}</p>}
+                      <p className="news-full-card__excerpt">{trans?.excerpt}</p>
                       <span className="sol-card__link">{readMoreLabel}</span>
                     </div>
                   </Link>
