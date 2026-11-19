@@ -8766,3 +8766,63 @@ button.smodal__chip {
     transition: none;
   }
 }
+
+/* ── About page ──────────────────────────────────────────────── */
+.about-intro {
+  max-width: 880px;
+  padding-left: 28px;
+  border-left: 4px solid var(--blue);
+}
+.about-block {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) 2fr;
+  gap: 48px;
+  align-items: start;
+}
+.about-block__head {
+  position: sticky;
+  top: 110px;
+}
+.about-block__num {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 3.4rem;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--blue-soft);
+  -webkit-text-stroke: 1.5px var(--blue-mid);
+}
+.about-block__head h2 {
+  font-size: clamp(1.4rem, 2.6vw, 1.9rem);
+  line-height: 1.25;
+  margin: 0;
+}
+.about-block__body {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.about-block__body p {
+  margin: 0;
+  padding: 22px 26px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--blue);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  font-size: 1.02rem;
+  line-height: 1.8;
+  color: var(--text);
+}
+@media (max-width: 860px) {
+  .about-block {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .about-block__head {
+    position: static;
+  }
+  .about-intro {
+    padding-left: 18px;
+  }
+}
