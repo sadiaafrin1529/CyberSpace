@@ -2,6 +2,16 @@ import Link from "next/link";
 import { getDict, type Locale } from "@/lib/i18n";
 import Logo from "./Logo";
 
+const LINKS = [
+  ["home", ""],
+  ["about", "/about"],
+  ["products", "/shop"],
+  ["solutions", "/solutions"],
+  ["news", "/news"],
+  ["careers", "/careers"],
+  ["contact", "/contact"],
+] as const;
+
 export default function Footer({ lang }: { lang: Locale }) {
   const t = getDict(lang);
   return (
@@ -14,15 +24,11 @@ export default function Footer({ lang }: { lang: Locale }) {
         <div>
           <h2 className="footer__h">{t.footer.quick}</h2>
           <ul className="footer__list">
-            <li>
-              <Link href={`/${lang}/shop`}>{t.nav.shop}</Link>
-            </li>
-            <li>
-              <Link href={`/${lang}/about`}>{t.nav.about}</Link>
-            </li>
-            <li>
-              <Link href={`/${lang}/contact`}>{t.nav.contact}</Link>
-            </li>
+            {LINKS.map(([key, href]) => (
+              <li key={key}>
+                <Link href={`/${lang}${href}`}>{t.nav[key]}</Link>
+              </li>
+            ))}
           </ul>
         </div>
         <div>
