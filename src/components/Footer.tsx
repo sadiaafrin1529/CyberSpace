@@ -5,8 +5,10 @@ import Logo from "./Logo";
 const LINKS = [
   ["home", ""],
   ["about", "/about"],
+  ["team", "/team"],
   ["products", "/shop"],
   ["solutions", "/solutions"],
+  ["projects", "/projects"],
   ["news", "/news"],
   ["careers", "/careers"],
   ["contact", "/contact"],
