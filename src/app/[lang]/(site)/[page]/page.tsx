@@ -5,9 +5,10 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { getDict, isLocale, type Locale } from "@/lib/i18n";
 import { pageMeta } from "@/lib/seo";
-import { FadeDown, FadeLeft, FadeRight, FadeUp, ZoomIn } from "@/components/Motion";
+import { FadeDown, FadeLeft, FadeRight, FadeUp } from "@/components/Motion";
 import { CACHE_TAGS, serverGet } from "@/lib/server-api";
 import type { Solution } from "@/redux/fetchers/solution/solutionApi";
+import { ABOUT } from "@/lib/about-content";
 import SolutionCard from "@/components/solutions/SolutionCard";
 
 const PAGES = ["about", "solutions", "contact"] as const;
@@ -21,181 +22,15 @@ export async function generateMetadata({
   const { lang, page } = await params;
   if (!isLocale(lang) || !PAGES.includes(page as PageKey)) return {};
   const t = getDict(lang);
-  return pageMeta(lang, `/${page}`, t.nav[page as PageKey], t.home.aboutText);
+  return pageMeta(
+    lang,
+    `/${page}`,
+    t.nav[page as PageKey],
+    page === "about" ? ABOUT[lang].intro.text : t.home.aboutText,
+  );
 }
 
 /* ── Content data ────────────────────────────────────────────── */
-
-const VALUES = [
-  {
-    icon: (
-      <svg
-        viewBox="0 0 24 24"
-        width="28"
-        height="28"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <circle cx="12" cy="12" r="10" />
-        <path d="m9 12 2 2 4-4" />
-      </svg>
-    ),
-    title: { en: "Customer Focus", az: "Müştəri Yönümlülük", ru: "Ориентация на клиента" },
-    desc: {
-      en: "Every decision starts with our clients. We listen, understand and deliver solutions that match real business needs.",
-      az: "Hər qərar müştərilərimizdən başlayır. Biz dinləyir, anlayır və real biznes ehtiyaclarına uyğun həllər çatdırırıq.",
-      ru: "Каждое решение начинается с наших клиентов. Мы слушаем, понимаем и предлагаем решения под реальные бизнес-задачи.",
-    },
-  },
-  {
-    icon: (
-      <svg
-        viewBox="0 0 24 24"
-        width="28"
-        height="28"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-      </svg>
-    ),
-    title: { en: "Technical Expertise", az: "Texniki Ekspertiza", ru: "Техническая экспертиза" },
-    desc: {
-      en: "Our certified engineers bring deep product knowledge and hands-on experience across every major vendor.",
-      az: "Sertifikatlı mühəndislərimiz hər böyük satıcı üzrə dərin məhsul bilikləri və əməli təcrübəyə malikdir.",
-      ru: "Наши сертифицированные инженеры обладают глубокими знаниями продуктов и практическим опытом работы со всеми ведущими вендорами.",
-    },
-  },
-  {
-    icon: (
-      <svg
-        viewBox="0 0 24 24"
-        width="28"
-        height="28"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-        <circle cx="9" cy="7" r="4" />
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-      </svg>
-    ),
-    title: { en: "Trusted Partnerships", az: "Etibar Tərəfdaşlığı", ru: "Доверенное партнёрство" },
-    desc: {
-      en: "We are authorised resellers for the world's leading IT brands, giving our customers genuine products and official support.",
-      az: "Biz dünyanın aparıcı IT brendlərinin səlahiyyətli distribütorlarıyıq, müştərilərimizə orijinal məhsullar və rəsmi dəstək təklif edirik.",
-      ru: "Мы являемся авторизованными реселлерами ведущих мировых IT-брендов, обеспечивая клиентов оригинальными продуктами и официальной поддержкой.",
-    },
-  },
-  {
-    icon: (
-      <svg
-        viewBox="0 0 24 24"
-        width="28"
-        height="28"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <circle cx="12" cy="12" r="10" />
-        <polyline points="12 6 12 12 16 14" />
-      </svg>
-    ),
-    title: { en: "Local Presence", az: "Yerli Mövcudluq", ru: "Местное присутствие" },
-    desc: {
-      en: "Headquartered in Baku with local warehousing and a field team, we provide fast, responsive service across Azerbaijan.",
-      az: "Bakıda baş ofisilə, yerli anbar və sahə komandası ilə biz bütün Azərbaycan boyu sürətli və cavabdeh xidmət göstəririk.",
-      ru: "Головной офис в Баку, местный склад и выездная команда обеспечивают быстрое реагирование по всему Азербайджану.",
-    },
-  },
-];
-
-const TIMELINE = [
-  {
-    year: "1998",
-    en: "Founded in Baku with a small team, initially focused on selling computers and technology equipment.",
-    az: "Bakıda kiçik komanda ilə yarandı, əvvəlcə kompüter və texnoloji avadanlıqların satışına fokuslandı.",
-    ru: "Основана в Баку небольшой командой, изначально специализировалась на продаже компьютеров и техники.",
-  },
-  {
-    year: "2009",
-    en: "Combined multiple service lines and expanded customer choice through international market research and staff training.",
-    az: "Bir çox xidməti birləşdirdi, xarici bazar araşdırmaları və təlimlərlə müştərilər üçün seçim imkanlarını genişləndirdi.",
-    ru: "Объединила несколько направлений услуг, расширив выбор для клиентов за счёт зарубежных исследований рынка и обучения персонала.",
-  },
-  {
-    year: "2019",
-    en: "Fully adapted to the modern era, delivering numerous projects; partnerships with leading national companies became a hallmark of quality.",
-    az: "Müasir dövrə tam uyğunlaşaraq bir çox layihəyə imza atdı; ölkənin aparıcı şirkətləri ilə əməkdaşlıq keyfiyyətin göstəricisinə çevrildi.",
-    ru: "Полностью адаптировалась к современным реалиям, реализовав множество проектов; сотрудничество с ведущими компаниями страны стало показателем качества.",
-  },
-];
-
-const CERTIFICATIONS = [
-  {
-    vendor: "Dell Technologies",
-    tier: { en: "Gold Partner", az: "Gold Tərəfdaş", ru: "Золотой партнёр" },
-    level: "gold",
-    icon: "D",
-  },
-  {
-    vendor: "HPE",
-    tier: { en: "Platinum Partner", az: "Platinum Tərəfdaş", ru: "Платиновый партнёр" },
-    level: "plat",
-    icon: "H",
-  },
-  {
-    vendor: "Cisco",
-    tier: { en: "Premier Partner", az: "Premier Tərəfdaş", ru: "Премьер-партнёр" },
-    level: "blue",
-    icon: "C",
-  },
-  {
-    vendor: "Fortinet",
-    tier: { en: "Gold Partner", az: "Gold Tərəfdaş", ru: "Золотой партнёр" },
-    level: "gold",
-    icon: "F",
-  },
-  {
-    vendor: "Microsoft",
-    tier: { en: "Gold Partner", az: "Gold Tərəfdaş", ru: "Золотой партнёр" },
-    level: "gold",
-    icon: "M",
-  },
-  {
-    vendor: "Axis Comm.",
-    tier: { en: "Authorized", az: "Səlahiyyətli", ru: "Авторизованный" },
-    level: "silver",
-    icon: "A",
-  },
-];
-
-const TEAM_STATS = [
-  { num: "50+", label: { en: "Engineers", az: "Mühəndis", ru: "Инженеров" }, color: "#1457d9" },
-  {
-    num: "12",
-    label: { en: "Sales team", az: "Satış komandası", ru: "Продажи" },
-    color: "#059669",
-  },
-  {
-    num: "8",
-    label: { en: "Support desk", az: "Dəstək masası", ru: "Поддержка" },
-    color: "#7c3aed",
-  },
-  { num: "5", label: { en: "Project mgrs", az: "Layihə müdirləri", ru: "PM" }, color: "#d97706" },
-];
 
 const CONTACT_INFO = [
   {
@@ -348,6 +183,7 @@ export default async function InfoPage({
   const t = getDict(lang);
   const key = page as PageKey;
   const L = lang as Locale;
+  const A = ABOUT[L];
   const solutions = key === "solutions" ? await fetchActiveSolutions() : null;
 
   return (
@@ -370,104 +206,32 @@ export default async function InfoPage({
       {key === "about" && (
         <div className="info-body">
           <section className="container section">
-            <FadeUp className="info-mission">
-              <p className="eyebrow cats-eyebrow">{t.home.eyebrow}</p>
-              <h2 className="info-mission__title">{t.home.aboutTitle}</h2>
-              <p className="prose info-mission__text">
-                {t.home.aboutText} We have built long-term partnerships with the world&rsquo;s
-                leading IT manufacturers and bring their technology directly to businesses across
-                Azerbaijan with local expertise, fast logistics and after-sales support.
-              </p>
+            <FadeUp className="info-mission about-intro">
+              <h2 className="info-mission__title">{A.intro.title}</h2>
+              <p className="prose info-mission__text">{A.intro.text}</p>
             </FadeUp>
           </section>
 
-          <section className="info-alt-section">
-            <div className="container">
-              <FadeUp className="info-section-head">
-                <p className="eyebrow cats-eyebrow">
-                  {{ en: "What drives us", az: "Bizi nə idarə edir", ru: "Что нами движет" }[L]}
-                </p>
-                <h2>
-                  {{ en: "Our Core Values", az: "Əsas Dəyərlərimiz", ru: "Наши ценности" }[L]}
-                </h2>
-              </FadeUp>
-              <div className="icard-grid">
-                {VALUES.map((v, i) => (
-                  <FadeUp key={i} delay={(i % 4) * 0.06} className="icard">
-                    <div className="icard__icon">{v.icon}</div>
-                    <h3 className="icard__title">{v.title[L]}</h3>
-                    <p className="icard__desc">{v.desc[L]}</p>
-                  </FadeUp>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          <section className="container section">
-            <FadeUp className="info-section-head">
-              <p className="eyebrow cats-eyebrow">
-                {{ en: "Official status", az: "Rəsmi status", ru: "Официальный статус" }[L]}
-              </p>
-              <h2>
-                {
-                  {
-                    en: "Vendor Certifications",
-                    az: "Satıcı Sertifikatları",
-                    ru: "Сертификаты вендоров",
-                  }[L]
-                }
-              </h2>
-            </FadeUp>
-            <div className="cert-grid">
-              {CERTIFICATIONS.map((c, i) => (
-                <ZoomIn
-                  key={c.vendor}
-                  delay={i * 0.055}
-                  className={`cert-badge cert-badge--${c.level}`}
-                >
-                  <div className="cert-badge__icon">{c.icon}</div>
-                  <p className="cert-badge__vendor">{c.vendor}</p>
-                  <p className="cert-badge__tier">{c.tier[L]}</p>
-                </ZoomIn>
-              ))}
-            </div>
-          </section>
-
-          <section className="info-alt-section">
-            <div className="container">
-              <FadeUp className="info-section-head">
-                <p className="eyebrow cats-eyebrow">
-                  {{ en: "Our journey", az: "Yolumuz", ru: "Наш путь" }[L]}
-                </p>
-                <h2>{{ en: "Company History", az: "Şirkət Tarixi", ru: "История компании" }[L]}</h2>
-              </FadeUp>
-              <div className="timeline">
-                {TIMELINE.map((item, i) => (
-                  <FadeUp key={item.year} delay={i * 0.06} className="timeline__item">
-                    <div className="timeline__year">{item.year}</div>
-                    <div className="timeline__dot" />
-                    <div className="timeline__text">{item[L]}</div>
-                  </FadeUp>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          <section className="container section">
-            <FadeUp className="info-section-head">
-              <h2>{{ en: "Our Team", az: "Komandamız", ru: "Наша команда" }[L]}</h2>
-            </FadeUp>
-            <div className="team-stat-grid">
-              {TEAM_STATS.map((s, i) => (
-                <FadeUp key={i} delay={i * 0.06} className="team-stat-card">
-                  <div className="team-stat-card__num" style={{ color: s.color }}>
-                    {s.num}
+          {A.sections.map((sec, i) => (
+            <section
+              key={sec.title}
+              className={i % 2 === 0 ? "info-alt-section" : "container section"}
+            >
+              <div className={i % 2 === 0 ? "container" : undefined}>
+                <FadeUp className="about-block">
+                  <div className="about-block__head">
+                    <span className="about-block__num">{String(i + 1).padStart(2, "0")}</span>
+                    <h2>{sec.title}</h2>
                   </div>
-                  <div className="team-stat-card__label">{s.label[L]}</div>
+                  <div className="about-block__body">
+                    {sec.paras.map((p) => (
+                      <p key={p}>{p}</p>
+                    ))}
+                  </div>
                 </FadeUp>
-              ))}
-            </div>
-          </section>
+              </div>
+            </section>
+          ))}
         </div>
       )}
 

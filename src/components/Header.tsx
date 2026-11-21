@@ -24,8 +24,10 @@ const SearchModal = dynamic(() => import("./SearchModal"), { ssr: false });
 const NAV = [
   ["home", ""],
   ["about", "/about"],
+  ["team", "/team"],
   ["products", "/shop"],
   ["solutions", "/solutions"],
+  ["projects", "/projects"],
   ["news", "/news"],
   ["careers", "/careers"],
   ["contact", "/contact"],

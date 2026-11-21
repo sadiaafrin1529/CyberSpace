@@ -20,6 +20,7 @@ import {
   Briefcase,
   FileText,
   Lightbulb,
+  FolderKanban,
 } from "lucide-react";
 import type { Dict } from "@/lib/i18n";
 import type { JwtUser } from "@/lib/server-auth";
@@ -60,6 +61,7 @@ export default function AdminSidebar({ lang, t, user }: Props) {
     },
     { href: `${base}/news`, label: t.dash.news ?? "News", icon: <Newspaper size={17} /> },
     { href: `${base}/solutions`, label: "Solutions", icon: <Lightbulb size={17} /> },
+    { href: `${base}/projects`, label: "Projects", icon: <FolderKanban size={17} /> },
     { href: `${base}/jobs`, label: "Jobs", icon: <Briefcase size={17} /> },
     { href: `${base}/applications`, label: "Applications", icon: <FileText size={17} /> },
     { href: `${base}/settings`, label: t.dash.settings, icon: <Settings size={17} /> },

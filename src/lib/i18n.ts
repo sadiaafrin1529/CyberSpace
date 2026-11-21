@@ -10,8 +10,10 @@ export type Dict = {
   nav: Record<
     | "home"
     | "about"
+    | "team"
     | "products"
     | "solutions"
+    | "projects"
     | "partners"
     | "news"
     | "careers"
@@ -38,8 +40,10 @@ const en: Dict = {
   nav: {
     home: "Home",
     about: "About Us",
+    team: "Our Team",
     products: "Products",
     solutions: "Solutions",
+    projects: "Projects",
     partners: "Partners",
     careers: "Careers",
     news: "News",
@@ -370,8 +374,10 @@ const az: Dict = {
   nav: {
     home: "Ana səhifə",
     about: "Haqqımızda",
+    team: "Komandamız",
     products: "Məhsullar",
     solutions: "Həllər",
+    projects: "Layihələr",
     partners: "Tərəfdaşlar",
     careers: "Karyera",
     news: "Xəbərlər",
@@ -701,8 +707,10 @@ const ru: Dict = {
   nav: {
     home: "Главная",
     about: "О нас",
+    team: "Наша команда",
     products: "Продукты",
     solutions: "Решения",
+    projects: "Проекты",
     partners: "Партнёры",
     careers: "Карьера",
     news: "Новости",
