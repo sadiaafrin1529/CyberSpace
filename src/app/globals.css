@@ -10655,3 +10655,161 @@ button.smodal__chip {
     max-width: none !important;
   }
 }
+
+/* ── Home news: image only, title + date appear over a blurred image on hover ── */
+.newsgrid .news-full-card {
+  position: relative;
+  border: 0;
+  background: #0f2044;
+  isolation: isolate;
+}
+.newsgrid .news-full-card__img-wrap {
+  aspect-ratio: 4 / 3;
+  height: 100%;
+}
+.newsgrid .news-full-card__img {
+  transition:
+    transform 0.5s var(--ease),
+    filter 0.4s var(--ease);
+}
+.newsgrid .news-full-card:hover .news-full-card__img,
+.newsgrid .news-full-card:focus-visible .news-full-card__img {
+  transform: scale(1.08);
+  filter: blur(7px) brightness(0.55);
+}
+.newsgrid .news-full-card__body {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  flex-direction: column-reverse;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  padding: 24px;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 0.35s var(--ease),
+    transform 0.35s var(--ease);
+  pointer-events: none;
+}
+.newsgrid .news-full-card:hover .news-full-card__body,
+.newsgrid .news-full-card:focus-visible .news-full-card__body {
+  opacity: 1;
+  transform: none;
+}
+.newsgrid .news-full-card__title {
+  color: #fff;
+  font-size: 1.15rem;
+  height: auto;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
+}
+.newsgrid .news-full-card__top {
+  height: auto;
+  justify-content: center;
+}
+.newsgrid .news-full-card__date {
+  color: #fff;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(4px);
+}
+/* No hover on touch screens: keep the text visible over a darkened image */
+@media (hover: none) {
+  .newsgrid .news-full-card__img {
+    filter: brightness(0.55);
+  }
+  .newsgrid .news-full-card__body {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── Projects card: image only, details appear over a blurred image on hover ── */
+.proj-card:not(.proj-card--skel) {
+  position: relative;
+  isolation: isolate;
+  background: #0f2044;
+  border-color: transparent;
+}
+.proj-card:not(.proj-card--skel) .proj-card__media {
+  height: 100%;
+}
+.proj-card:not(.proj-card--skel) .proj-card__media img {
+  transition:
+    transform 0.7s var(--ease),
+    filter 0.4s var(--ease);
+}
+.proj-card:not(.proj-card--skel):hover .proj-card__media img,
+.proj-card:not(.proj-card--skel):focus-visible .proj-card__media img {
+  transform: scale(1.08);
+  filter: blur(7px) brightness(0.5);
+}
+.proj-card:not(.proj-card--skel) .proj-card__chip {
+  opacity: 0;
+  transform: translateY(-6px);
+  transition:
+    opacity 0.35s var(--ease),
+    transform 0.35s var(--ease);
+}
+.proj-card:not(.proj-card--skel) .proj-card__body {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 28px 26px;
+  text-align: center;
+  background: none;
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 0.35s var(--ease),
+    transform 0.35s var(--ease);
+  pointer-events: none;
+}
+.proj-card:not(.proj-card--skel):hover .proj-card__body,
+.proj-card:not(.proj-card--skel):focus-visible .proj-card__body,
+.proj-card:not(.proj-card--skel):hover .proj-card__chip,
+.proj-card:not(.proj-card--skel):focus-visible .proj-card__chip {
+  opacity: 1;
+  transform: none;
+}
+.proj-card:not(.proj-card--skel) .proj-card__body h3 {
+  color: #fff;
+  font-size: 1.25rem;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
+}
+.proj-card:not(.proj-card--skel) .proj-card__body p {
+  color: rgba(255, 255, 255, 0.88);
+  margin-bottom: 18px;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+}
+.proj-card:not(.proj-card--skel) .proj-card__more {
+  margin-top: 0;
+  padding: 8px 18px;
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(4px);
+}
+/* Touch screens have no hover: keep the details visible over a darkened image */
+@media (hover: none) {
+  .proj-card:not(.proj-card--skel) .proj-card__media img {
+    filter: brightness(0.45);
+  }
+  .proj-card:not(.proj-card--skel) .proj-card__body,
+  .proj-card:not(.proj-card--skel) .proj-card__chip {
+    opacity: 1;
+    transform: none;
+  }
+}
