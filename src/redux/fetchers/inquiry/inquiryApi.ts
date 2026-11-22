@@ -8,12 +8,15 @@ export interface Inquiry {
   message?: string | null;
   status: string;
   createdAt: string;
-  product?: { id: string; translations?: { lang: string; name: string }[] };
+  product?: { id: string; translations?: { lang: string; name: string }[] } | null;
+  bundle?: { id: number; translations?: { lang: string; title: string }[] } | null;
   submittedBy?: { id: number; name?: string; email: string } | null;
 }
 
+/** Exactly one of productId / bundleId. */
 interface SubmitInquiryPayload {
-  productId: string;
+  productId?: string;
+  bundleId?: number;
   name: string;
   phone: string;
   message?: string;
@@ -52,3 +55,20 @@ export const {
   useGetUserInquiriesQuery,
   useUpdateInquiryMutation,
 } = inquiryApi;
+
+/** Display name of what an inquiry is about: the product name, or the Solutions bundle title. */
+export function inquiryTargetName(
+  inq: Pick<Inquiry, "product" | "bundle">,
+  lang: string,
+): string {
+  const L = lang.toUpperCase();
+  const product = inq.product?.translations;
+  if (product?.length) {
+    return (product.find((x) => x.lang === L) ?? product.find((x) => x.lang === "EN") ?? product[0]).name;
+  }
+  const bundle = inq.bundle?.translations;
+  if (bundle?.length) {
+    return (bundle.find((x) => x.lang === L) ?? bundle.find((x) => x.lang === "EN") ?? bundle[0]).title;
+  }
+  return "—";
+}

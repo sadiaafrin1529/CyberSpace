@@ -4,51 +4,179 @@ import { tagTypes } from "@/redux/TagTypes";
 export type SolutionLang = "EN" | "AZ" | "RU";
 export const SOLUTION_LANGS: SolutionLang[] = ["EN", "AZ", "RU"];
 
-/** Accent colours and icon presets of the public Solutions cards (sol-card--* styles). */
-export const SOLUTION_COLORS = ["blue", "orange", "cyan", "red", "violet", "green"] as const;
-export type SolutionColor = (typeof SOLUTION_COLORS)[number];
-export const SOLUTION_ICON_KEYS = ["server", "bolt", "fan", "video", "shield", "gear"] as const;
+export const BILLING_PERIODS = ["ONE_TIME", "MONTHLY", "QUARTERLY", "YEARLY"] as const;
+export type BillingPeriod = (typeof BILLING_PERIODS)[number];
+
+/** Built-in icon keys; an icon may also be an uploaded image URL. See components/solutions/SolutionIcon. */
+export const SOLUTION_ICON_KEYS = [
+  "server",
+  "network",
+  "shield",
+  "video",
+  "bolt",
+  "fan",
+  "cloud",
+  "cpu",
+  "gear",
+  "box",
+] as const;
 export type SolutionIconKey = (typeof SOLUTION_ICON_KEYS)[number];
 
-export interface SolutionTranslation {
+/* ── Public + admin shapes ─────────────────────────────────── */
+
+export interface CategoryTranslation {
+  lang: SolutionLang;
+  name: string;
+  description: string | null;
+  instruction: string | null;
+}
+
+export interface BundleTranslation {
   lang: SolutionLang;
   title: string;
-  shortDescription: string;
   description: string | null;
-  features: string[];
-  seoTitle: string | null;
-  seoDescription: string | null;
+  badge: string | null;
 }
 
-export interface Solution {
+export interface ItemTranslation {
+  lang: SolutionLang;
+  title: string;
+  description: string | null;
+}
+
+export interface FeatureTranslation {
+  lang: SolutionLang;
+  title: string;
+}
+
+export interface BundleItem {
   id: number;
-  /** EN title (fallback: first language); stable across dashboard languages. */
+  productId: string | null;
+  /** Decimal serialised as a string by the API. */
+  price: string | null;
+  sortOrder: number;
+  translations: ItemTranslation[];
+  product?: {
+    id: string;
+    sku: string;
+    brand: string | null;
+    imageUrl: string | null;
+    /** Decimal serialised as a string; used when the line has no own price. */
+    price: string | null;
+    currency: string | null;
+    translations: { lang: SolutionLang; name: string }[];
+  } | null;
+}
+
+export interface BundleFeature {
+  id: number;
+  sortOrder: number;
+  translations: FeatureTranslation[];
+}
+
+export interface SolutionBundle {
+  id: number;
+  sectionId: number;
+  /** EN title (fallback: first language). */
   title: string;
   slug: string;
-  color: SolutionColor;
-  iconKey: SolutionIconKey | null;
-  iconUrl: string | null;
-  imageUrl: string | null;
-  bannerUrl: string | null;
-  images: string[];
+  icon: string | null;
+  price: string | null;
+  currency: string;
+  billingPeriod: BillingPeriod;
   isActive: boolean;
-  order: number;
-  createdAt: string;
-  updatedAt: string;
-  translations: SolutionTranslation[];
+  sortOrder: number;
+  translations: BundleTranslation[];
+  items: BundleItem[];
+  features: BundleFeature[];
+  _count?: { items: number; features: number };
+  /** Present on admin responses. */
+  section?: {
+    id: number;
+    categoryId: number;
+    translations: { lang: SolutionLang; title: string }[];
+    category: { id: number; translations: { lang: SolutionLang; name: string }[] };
+  };
 }
 
-export interface SolutionInput {
-  slug?: string;
-  color: SolutionColor;
-  iconKey: SolutionIconKey | null;
-  iconUrl: string | null;
-  imageUrl?: string | null;
-  bannerUrl?: string | null;
-  images?: string[];
+export interface SectionTranslation {
+  lang: SolutionLang;
+  title: string;
+  description: string | null;
+}
+
+/** An accordion bar inside a solution category; holds bundles. */
+export interface SolutionSection {
+  id: number;
+  categoryId: number;
+  /** EN title (fallback: first language). */
+  title: string;
+  icon: string | null;
   isActive: boolean;
-  order: number;
-  translations: SolutionTranslation[];
+  sortOrder: number;
+  translations: SectionTranslation[];
+  /** Present on admin responses. */
+  _count?: { bundles: number };
+  category?: { id: number; translations: { lang: SolutionLang; name: string }[] };
+}
+
+export interface SolutionCategory {
+  id: number;
+  /** EN name (fallback: first language). */
+  name: string;
+  slug: string;
+  icon: string | null;
+  image: string | null;
+  accentColor: string;
+  isActive: boolean;
+  showOnHome: boolean;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+  translations: CategoryTranslation[];
+  /** Admin responses. */
+  _count?: { sections: number };
+  /** Public responses: published sections / distinct products across published bundles. */
+  sectionCount?: number;
+  productCount?: number;
+}
+
+export interface SolutionCategoryDetail extends SolutionCategory {
+  sections: (SolutionSection & { bundles: SolutionBundle[] })[];
+}
+
+/* ── Inputs (translations are upserted per language; items/features replace the whole list) ── */
+
+export interface CategoryInput {
+  icon: string | null;
+  image: string | null;
+  accentColor: string;
+  isActive: boolean;
+  showOnHome: boolean;
+  sortOrder: number;
+  translations: CategoryTranslation[];
+}
+
+export interface SectionInput {
+  categoryId: number;
+  icon: string | null;
+  isActive: boolean;
+  sortOrder: number;
+  translations: SectionTranslation[];
+}
+
+export interface BundleInput {
+  sectionId: number;
+  icon: string | null;
+  price: string | number | null;
+  currency: string;
+  billingPeriod: BillingPeriod;
+  isActive: boolean;
+  sortOrder: number;
+  translations: BundleTranslation[];
+  /** A line is a linked product (translations optional) or a free-text line (English title required). */
+  items: { productId: string | null; price: string | number | null; translations: ItemTranslation[] }[];
+  features: { translations: FeatureTranslation[] }[];
 }
 
 export interface Paged<T> {
@@ -56,7 +184,25 @@ export interface Paged<T> {
   meta: { page: number; limit: number; total: number };
 }
 
-export interface SolutionListArgs {
+export interface CategoryListArgs {
+  search?: string;
+  status?: "active" | "inactive" | "";
+  home?: boolean;
+  page?: number;
+  limit?: number;
+}
+
+export interface SectionListArgs {
+  categoryId?: number;
+  search?: string;
+  status?: "active" | "inactive" | "";
+  page?: number;
+  limit?: number;
+}
+
+export interface BundleListArgs {
+  categoryId?: number;
+  sectionId?: number;
   search?: string;
   status?: "active" | "inactive" | "";
   page?: number;
@@ -70,59 +216,123 @@ const qs = (o: object) => {
   return s ? `?${s}` : "";
 };
 
+const paged = <T>(res: { data?: T[]; meta?: Paged<T>["meta"] }): Paged<T> => ({
+  data: res.data ?? [],
+  meta: res.meta ?? { page: 1, limit: 50, total: 0 },
+});
+
+const A = "/solutions/admin";
+
 export const solutionApi = baseApi.injectEndpoints({
   endpoints: (b) => ({
-    getSolutions: b.query<Paged<Solution>, SolutionListArgs | void>({
-      query: (a) => `/solutions${qs(a ?? {})}`,
+    /* Categories */
+    getSolutionCategories: b.query<Paged<SolutionCategory>, CategoryListArgs | void>({
+      query: (a) => `${A}/categories${qs(a ?? {})}`,
       providesTags: [tagTypes.solution],
-      transformResponse: (res: {
-        data?: Solution[];
-        meta?: Paged<Solution>["meta"];
-      }): Paged<Solution> => ({
-        data: res.data ?? [],
-        meta: res.meta ?? { page: 1, limit: 10, total: 0 },
-      }),
+      transformResponse: paged<SolutionCategory>,
     }),
-    createSolution: b.mutation<Solution, SolutionInput>({
-      query: (body) => ({ url: "/solutions", method: "POST", body }),
+    createSolutionCategory: b.mutation<SolutionCategory, CategoryInput>({
+      query: (body) => ({ url: `${A}/categories`, method: "POST", body }),
       invalidatesTags: [tagTypes.solution],
-      transformResponse: (res: { data: Solution }) => res.data,
+      transformResponse: (res: { data: SolutionCategory }) => res.data,
     }),
-    updateSolution: b.mutation<Solution, { id: number; body: Partial<SolutionInput> }>({
-      query: ({ id, body }) => ({ url: `/solutions/${id}`, method: "PATCH", body }),
+    updateSolutionCategory: b.mutation<
+      SolutionCategory,
+      { id: number; body: Partial<CategoryInput> }
+    >({
+      query: ({ id, body }) => ({ url: `${A}/categories/${id}`, method: "PATCH", body }),
       invalidatesTags: [tagTypes.solution],
-      transformResponse: (res: { data: Solution }) => res.data,
+      transformResponse: (res: { data: SolutionCategory }) => res.data,
     }),
-    setSolutionStatus: b.mutation<Solution, { id: number; isActive: boolean }>({
-      query: ({ id, isActive }) => ({
-        url: `/solutions/${id}/status`,
-        method: "PATCH",
-        body: { isActive },
+    /** `cascade` also deletes the category's sections, bundles, items and features. */
+    deleteSolutionCategory: b.mutation<void, { id: number; cascade?: boolean }>({
+      query: ({ id, cascade }) => ({
+        url: `${A}/categories/${id}${cascade ? "?cascade=true" : ""}`,
+        method: "DELETE",
       }),
       invalidatesTags: [tagTypes.solution],
-      transformResponse: (res: { data: Solution }) => res.data,
     }),
-    setSolutionOrder: b.mutation<Solution, { id: number; order: number }>({
-      query: ({ id, order }) => ({
-        url: `/solutions/${id}/order`,
-        method: "PATCH",
-        body: { order },
+    reorderSolutionCategories: b.mutation<void, number[]>({
+      query: (ids) => ({ url: `${A}/categories/reorder`, method: "PATCH", body: { ids } }),
+      invalidatesTags: [tagTypes.solution],
+    }),
+
+    /* Sections */
+    getSolutionSections: b.query<Paged<SolutionSection>, SectionListArgs | void>({
+      query: (a) => `${A}/sections${qs(a ?? {})}`,
+      providesTags: [tagTypes.solution],
+      transformResponse: paged<SolutionSection>,
+    }),
+    createSolutionSection: b.mutation<SolutionSection, SectionInput>({
+      query: (body) => ({ url: `${A}/sections`, method: "POST", body }),
+      invalidatesTags: [tagTypes.solution],
+      transformResponse: (res: { data: SolutionSection }) => res.data,
+    }),
+    updateSolutionSection: b.mutation<SolutionSection, { id: number; body: Partial<SectionInput> }>({
+      query: ({ id, body }) => ({ url: `${A}/sections/${id}`, method: "PATCH", body }),
+      invalidatesTags: [tagTypes.solution],
+      transformResponse: (res: { data: SolutionSection }) => res.data,
+    }),
+    /** `cascade` also deletes the section's bundles. */
+    deleteSolutionSection: b.mutation<void, { id: number; cascade?: boolean }>({
+      query: ({ id, cascade }) => ({
+        url: `${A}/sections/${id}${cascade ? "?cascade=true" : ""}`,
+        method: "DELETE",
       }),
       invalidatesTags: [tagTypes.solution],
-      transformResponse: (res: { data: Solution }) => res.data,
     }),
-    deleteSolution: b.mutation<void, number>({
-      query: (id) => ({ url: `/solutions/${id}`, method: "DELETE" }),
+    reorderSolutionSections: b.mutation<void, number[]>({
+      query: (ids) => ({ url: `${A}/sections/reorder`, method: "PATCH", body: { ids } }),
+      invalidatesTags: [tagTypes.solution],
+    }),
+
+    /* Bundles */
+    getSolutionBundles: b.query<Paged<SolutionBundle>, BundleListArgs | void>({
+      query: (a) => `${A}/bundles${qs(a ?? {})}`,
+      providesTags: [tagTypes.solution],
+      transformResponse: paged<SolutionBundle>,
+    }),
+    getSolutionBundle: b.query<SolutionBundle, number>({
+      query: (id) => `${A}/bundles/${id}`,
+      providesTags: [tagTypes.solution],
+      transformResponse: (res: { data: SolutionBundle }) => res.data,
+    }),
+    createSolutionBundle: b.mutation<SolutionBundle, BundleInput>({
+      query: (body) => ({ url: `${A}/bundles`, method: "POST", body }),
+      invalidatesTags: [tagTypes.solution],
+      transformResponse: (res: { data: SolutionBundle }) => res.data,
+    }),
+    updateSolutionBundle: b.mutation<SolutionBundle, { id: number; body: Partial<BundleInput> }>({
+      query: ({ id, body }) => ({ url: `${A}/bundles/${id}`, method: "PATCH", body }),
+      invalidatesTags: [tagTypes.solution],
+      transformResponse: (res: { data: SolutionBundle }) => res.data,
+    }),
+    deleteSolutionBundle: b.mutation<void, number>({
+      query: (id) => ({ url: `${A}/bundles/${id}`, method: "DELETE" }),
+      invalidatesTags: [tagTypes.solution],
+    }),
+    reorderSolutionBundles: b.mutation<void, number[]>({
+      query: (ids) => ({ url: `${A}/bundles/reorder`, method: "PATCH", body: { ids } }),
       invalidatesTags: [tagTypes.solution],
     }),
   }),
 });
 
 export const {
-  useGetSolutionsQuery,
-  useCreateSolutionMutation,
-  useUpdateSolutionMutation,
-  useSetSolutionStatusMutation,
-  useSetSolutionOrderMutation,
-  useDeleteSolutionMutation,
+  useGetSolutionCategoriesQuery,
+  useCreateSolutionCategoryMutation,
+  useUpdateSolutionCategoryMutation,
+  useDeleteSolutionCategoryMutation,
+  useReorderSolutionCategoriesMutation,
+  useGetSolutionSectionsQuery,
+  useCreateSolutionSectionMutation,
+  useUpdateSolutionSectionMutation,
+  useDeleteSolutionSectionMutation,
+  useReorderSolutionSectionsMutation,
+  useGetSolutionBundlesQuery,
+  useGetSolutionBundleQuery,
+  useCreateSolutionBundleMutation,
+  useUpdateSolutionBundleMutation,
+  useDeleteSolutionBundleMutation,
+  useReorderSolutionBundlesMutation,
 } = solutionApi;

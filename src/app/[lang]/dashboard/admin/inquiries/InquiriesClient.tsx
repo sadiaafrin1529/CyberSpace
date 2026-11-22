@@ -3,11 +3,7 @@
 import { useState } from "react";
 import { formatDate } from "@/lib/format";
 import type { Dict, Locale } from "@/lib/i18n";
-import {
-  useGetInquiriesQuery,
-  useUpdateInquiryMutation,
-  type Inquiry,
-} from "@/redux/fetchers/inquiry/inquiryApi";
+import { useGetInquiriesQuery, useUpdateInquiryMutation, type Inquiry, inquiryTargetName } from "@/redux/fetchers/inquiry/inquiryApi";
 import {
   Dialog,
   DialogContent,
@@ -19,9 +15,8 @@ import { MessageSquare, User, Phone, Package, Calendar, X } from "lucide-react";
 
 const STATUSES = ["ALL", "NEW", "IN_PROGRESS", "DONE"];
 
-function getProductName(inq: Inquiry, lang: string) {
-  const trans = inq.product?.translations?.find((x) => x.lang === lang.toUpperCase());
-  return trans?.name ?? "—";
+function getProductName(inq: Pick<Inquiry, "product" | "bundle">, lang: string) {
+  return inquiryTargetName(inq, lang);
 }
 
 function statusLabel(s: string, t: Dict) {

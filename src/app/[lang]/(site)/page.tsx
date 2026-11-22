@@ -9,7 +9,20 @@ import { pageMeta } from "@/lib/seo";
 import { CACHE_TAGS, serverGet } from "@/lib/server-api";
 import { FadeDown, FadeLeft, FadeRight, FadeUp, ZoomIn } from "@/components/Motion";
 import PartnersCarousel from "@/components/PartnersCarousel";
+import HomeSolutions from "@/components/solutions/HomeSolutions";
 import heroSvg from "@/assets/animated-ai-hero.svg";
+import logo_akronex from "@/assets/Logo/akronex_logo_-removebg-preview.png";
+import logo_canon from "@/assets/Logo/Canon_logo-removebg-preview.png";
+import logo_dell from "@/assets/Logo/Dell_logo.png";
+import logo_fanvil from "@/assets/Logo/Fanvil-Logo.png";
+import logo_hp from "@/assets/Logo/HP Logo.png";
+import logo_huawei from "@/assets/Logo/Huawei logo.png";
+import logo_huaweiEkit from "@/assets/Logo/Huawei-Ekit.png";
+import logo_lenovo from "@/assets/Logo/Lenovo_logo-removebg-preview.png";
+import logo_rubezh from "@/assets/Logo/Rubezh.png";
+import logo_sauter from "@/assets/Logo/sauter.png";
+import logo_schneider from "@/assets/Logo/Schneider_Electric-Logo.wine.png";
+import logo_yeastar from "@/assets/Logo/Yeastar.png";
 
 type DbCategory = {
   id: number;
@@ -349,16 +362,18 @@ const TESTIMONIALS = [
 ];
 
 const CLIENTS = [
-  "Kapital Bank",
-  "SOCAR",
-  "AzərGold",
-  "Bakcell",
-  "Azercell",
-  "PASHA Bank",
-  "ABB Bank",
-  "Silkway Airlines",
-  "Ministry of Finance",
-  "ASAN Service",
+  { name: "Akronex", src: logo_akronex },
+  { name: "Canon", src: logo_canon },
+  { name: "Dell", src: logo_dell },
+  { name: "Fanvil", src: logo_fanvil },
+  { name: "HP", src: logo_hp },
+  { name: "Huawei", src: logo_huawei },
+  { name: "Huawei eKit", src: logo_huaweiEkit },
+  { name: "Lenovo", src: logo_lenovo },
+  { name: "Rubezh", src: logo_rubezh },
+  { name: "Sauter", src: logo_sauter },
+  { name: "Schneider Electric", src: logo_schneider },
+  { name: "Yeastar", src: logo_yeastar },
 ];
 
 export async function generateMetadata({
@@ -446,9 +461,6 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
             <FadeUp delay={0.2} className="hero__cta">
               <Link href={`/${lang}/shop`} className="btn btn--primary btn--lg">
                 {h.exploreProducts}
-              </Link>
-              <Link href={`/${lang}/solutions`} className="btn btn--outline btn--lg">
-                {h.ourSolutions}
               </Link>
             </FadeUp>
           </div>
@@ -543,22 +555,25 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
 
       {/* ── Client Logos ── */}
       <FadeUp className="client-strip">
-        <p className="client-strip__label">
-          {
-            {
-              en: "Trusted by Azerbaijan's leading organisations",
-              az: "Azərbaycanın aparıcı təşkilatları tərəfindən etibar edilir",
-              ru: "Доверяют ведущие организации Азербайджана",
-            }[L]
-          }
-        </p>
         <div className="client-marquee" aria-label="Client list">
           <div className="client-marquee__track">
             {[...CLIENTS, ...CLIENTS].map((c, i) => (
               <span key={i} className="client-logo">
-                {c}
+                <Image src={c.src} alt={c.name} height={28} sizes="120px" />
               </span>
             ))}
+          </div>
+        </div>
+        <div className="client-marquee client-marquee--reverse" aria-hidden="true">
+          <div className="client-marquee__track">
+            {[...CLIENTS]
+              .reverse()
+              .concat([...CLIENTS].reverse())
+              .map((c, i) => (
+                <span key={i} className="client-logo">
+                  <Image src={c.src} alt={c.name} height={28} sizes="120px" />
+                </span>
+              ))}
           </div>
         </div>
       </FadeUp>
@@ -644,6 +659,9 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
           </div>
         </div>
       </section>
+
+      {/* ── Solutions (database-driven) ── */}
+      <HomeSolutions lang={L} />
 
       {/* ── Why Choose Us ── */}
       <section className="why-section">

@@ -2301,6 +2301,12 @@ textarea {
   width: max-content;
   animation: marquee 28s linear infinite;
 }
+.client-marquee--reverse {
+  margin-top: 14px;
+}
+.client-marquee--reverse .client-marquee__track {
+  animation-direction: reverse;
+}
 .client-marquee__track:hover {
   animation-play-state: paused;
 }
@@ -2319,6 +2325,12 @@ textarea {
     background var(--dur) var(--ease),
     color var(--dur) var(--ease),
     border-color var(--dur) var(--ease);
+}
+.client-logo img {
+  height: 28px;
+  width: auto;
+  max-width: 110px;
+  object-fit: contain;
 }
 .client-logo:hover {
   background: var(--blue-soft);
@@ -2982,53 +2994,6 @@ textarea {
 
 /* ── News Full Card (with image) ─────────────────────────────── */
 
-/* ── Colored Solution Cards ──────────────────────────────────── */
-.sol-card--blue {
-  --sol-c: #1457d9;
-  --sol-s: #e6eefc;
-}
-.sol-card--cyan {
-  --sol-c: #0891b2;
-  --sol-s: #e0f7fa;
-}
-.sol-card--red {
-  --sol-c: #dc2626;
-  --sol-s: #fef2f2;
-}
-.sol-card--violet {
-  --sol-c: #7c3aed;
-  --sol-s: #f5f3ff;
-}
-.sol-card--green {
-  --sol-c: #059669;
-  --sol-s: #ecfdf5;
-}
-.sol-card--indigo {
-  --sol-c: #4f46e5;
-  --sol-s: #eef2ff;
-}
-.sol-card--orange {
-  --sol-c: #f97316;
-  --sol-s: #fff3e8;
-}
-.sol-card[class*="sol-card--"] .sol-card__icon {
-  background: var(--sol-s, var(--blue-soft));
-  color: var(--sol-c, var(--blue));
-}
-.sol-card[class*="sol-card--"]:hover .sol-card__icon {
-  background: var(--sol-c, var(--blue));
-  color: #fff;
-}
-.sol-card[class*="sol-card--"] .sol-card__list li::before {
-  background: var(--sol-c, var(--blue-bright));
-}
-.sol-card[class*="sol-card--"] .sol-card__link {
-  color: var(--sol-c, var(--blue));
-}
-.sol-card[class*="sol-card--"]:hover {
-  border-color: var(--sol-c, var(--blue));
-}
-
 /* ── Gradient Heading ────────────────────────────────────────── */
 .gradient-heading {
   background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 60%, var(--blue-mid) 100%);
@@ -3217,86 +3182,7 @@ textarea {
   padding-top: 2px;
 }
 
-/* ── Solutions Grid ──────────────────────────────────────────── */
-.sol-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 22px;
-}
-.sol-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  padding: 30px 26px;
-  box-shadow: var(--shadow-sm);
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  transition:
-    box-shadow var(--dur-md) var(--ease-out),
-    transform var(--dur-md) var(--ease-spring),
-    border-color var(--dur-md) var(--ease-out);
-}
-.sol-card:hover {
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-6px);
-  border-color: rgba(47, 107, 255, 0.3);
-}
-.sol-card__icon {
-  width: 56px;
-  height: 56px;
-  display: grid;
-  place-items: center;
-  background: var(--blue-soft);
-  border-radius: var(--radius-lg);
-  color: var(--blue);
-  flex-shrink: 0;
-  transition:
-    background var(--dur-md) var(--ease-out),
-    color var(--dur-md) var(--ease-out);
-}
-.sol-card:hover .sol-card__icon {
-  background: var(--blue);
-  color: #fff;
-}
-.sol-card__title {
-  font-size: 1.12rem;
-  font-weight: 800;
-  color: var(--navy);
-  margin: 0;
-}
-.sol-card__desc {
-  color: var(--muted);
-  font-size: 0.9rem;
-  line-height: 1.65;
-  margin: 0;
-}
-.sol-card__list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-  flex: 1;
-}
-.sol-card__list li {
-  font-size: 0.88rem;
-  color: var(--text);
-  padding-left: 16px;
-  position: relative;
-  line-height: 1.5;
-}
-.sol-card__list li::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 7px;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--blue-bright);
-}
+/* ── Read-more link (used by News cards) ───────────────────────── */
 .sol-card__link {
   font-size: 0.88rem;
   font-weight: 700;
@@ -3309,36 +3195,6 @@ textarea {
 }
 .sol-card__link:hover {
   color: var(--blue-bright);
-}
-/* Card titles link to the solution's detail page without changing how they look */
-.sol-card__title a {
-  color: inherit;
-  text-decoration: none;
-}
-.sol-card__title a:hover {
-  color: var(--blue);
-}
-
-/* ── Solution detail page ────────────────────────────────────── */
-.sol-detail {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 28px;
-  align-items: start;
-}
-@media (min-width: 900px) {
-  .sol-detail {
-    grid-template-columns: minmax(0, 1fr) 340px;
-    gap: 36px;
-  }
-}
-.sol-detail__main .prose {
-  margin: 0 0 16px;
-  white-space: pre-line;
-  overflow-wrap: anywhere;
-}
-.sol-detail__aside:hover {
-  transform: none;
 }
 
 /* ── Services Grid ───────────────────────────────────────────── */
@@ -8640,133 +8496,6 @@ button.smodal__chip {
   }
 }
 
-/* ================================================================
-   SOLUTIONS GRID: identical collapsed cards + per-card See more
-   (components/solutions/SolutionCard.tsx)
-   Every collapsed card has the same fixed structure, so all cards are the same height:
-   2-line title, 2-line description, room for 5 single-line key points, a fixed toggle slot.
-   ================================================================ */
-.sol-grid {
-  align-items: start; /* an expanded card grows alone; its row neighbours keep their height */
-  --sol-li: 1.32rem; /* one key point: 0.88rem font x 1.5 line-height */
-  --sol-gap: 14px; /* .sol-card flex gap */
-  --sol-toggle: 28px;
-}
-.sol-grid .sol-card__title {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  overflow: hidden;
-  overflow-wrap: anywhere;
-  line-height: 1.3;
-  height: 2.6em;
-}
-.sol-grid .sol-card__desc {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  overflow: hidden;
-  overflow-wrap: anywhere;
-  height: 3.3em; /* 2 lines x 1.65 line-height */
-}
-
-/* First five key points: five reserved slots, one line each */
-.sol-grid .sol-card__list {
-  flex: none;
-}
-.sol-grid .sol-card > .sol-card__list {
-  min-height: calc(5 * var(--sol-li) + 4 * 7px);
-}
-.sol-grid .sol-card__list li {
-  height: var(--sol-li);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.sol-grid .sol-card__list li::before {
-  top: 0.5em;
-}
-/* Expanded card: full text, wrapping allowed */
-.sol-grid .sol-card.is-open .sol-card__list li {
-  height: auto;
-  white-space: normal;
-  overflow: visible;
-  overflow-wrap: anywhere;
-}
-
-/* Remaining key points: zero height when collapsed (its flex gap is cancelled), animated open */
-.sol-card__more {
-  display: grid;
-  grid-template-rows: 0fr;
-  margin-top: calc(var(--sol-gap, 14px) * -1);
-  visibility: hidden;
-  transition:
-    grid-template-rows 0.3s var(--ease),
-    visibility 0s linear 0.3s;
-}
-.sol-card.is-open .sol-card__more {
-  grid-template-rows: 1fr;
-  visibility: visible;
-  transition-delay: 0s;
-}
-.sol-card__more-inner {
-  min-height: 0;
-  overflow: hidden;
-}
-.sol-card__more-inner > .sol-card__list {
-  padding-top: 7px;
-}
-
-/* See more / See less: same fixed slot on every card */
-.sol-card__toggle-slot {
-  display: flex;
-  align-items: center;
-  height: var(--sol-toggle, 28px);
-}
-.sol-card__toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  height: 100%;
-  padding: 0 2px;
-  border: 0;
-  background: none;
-  font: inherit;
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--sol-c, var(--blue));
-  cursor: pointer;
-  border-radius: 6px;
-  transition: opacity var(--dur) var(--ease);
-}
-.sol-card__toggle:hover {
-  opacity: 0.75;
-}
-.sol-card__toggle:focus-visible {
-  outline: 2px solid var(--sol-c, var(--blue));
-  outline-offset: 2px;
-}
-.sol-card__toggle svg {
-  transition: transform 0.25s var(--ease);
-}
-.sol-card.is-open .sol-card__toggle svg {
-  transform: rotate(180deg);
-}
-
-@media (max-width: 639px) {
-  .sol-grid {
-    --sol-toggle: 40px; /* bigger tap target on phones; still identical on every card */
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .sol-card__more,
-  .sol-card__toggle svg {
-    transition: none;
-  }
-}
-
 /* ── About page ──────────────────────────────────────────────── */
 .about-intro {
   max-width: 880px;
@@ -10094,5 +9823,835 @@ button.smodal__chip {
   .pm-icon-btn,
   .pm-bars__fill {
     transition: none;
+  }
+}
+
+/* ================================================================
+   SOLUTIONS (database-driven): overview cards, details page, accordion sections, bundles.
+   Components: components/solutions/*. --sx-c / --sx-s are set per category from its accent colour.
+   ================================================================ */
+.solx-section {
+  --sx-c: #2563eb;
+  --sx-s: #2563eb1a;
+  background: #f7f9fc;
+  padding: 56px 0 72px;
+}
+.solx-section--page {
+  padding-top: 40px;
+  min-height: 60vh;
+}
+
+/* Heading: eyebrow + title left, hint right */
+.solx-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+.solx-head__eyebrow {
+  margin: 0 0 6px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #2563eb;
+}
+.solx-head__title {
+  margin: 0;
+  font-size: clamp(1.7rem, 3.4vw, 2.5rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: #0b1220;
+}
+.solx-head__hint {
+  margin: 0;
+  max-width: 340px;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: #6b7a90;
+}
+@media (max-width: 767px) {
+  .solx-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .solx-section {
+    padding: 40px 0 56px;
+  }
+}
+
+/* Overview grid: 3 columns desktop, 2 tablet, 1 mobile; equal card heights */
+.solx-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  align-items: stretch;
+}
+.solx-grid > * {
+  display: flex;
+}
+@media (max-width: 1023px) {
+  .solx-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 639px) {
+  .solx-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+}
+
+.solx-card {
+  --sx-c: #2563eb;
+  --sx-s: #2563eb1a;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 24px 18px;
+  background: #fff;
+  border: 1px solid #e6ebf3;
+  border-radius: 22px;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  text-decoration: none;
+  color: inherit;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+.solx-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--sx-c);
+  box-shadow: 0 18px 38px -20px rgba(16, 24, 40, 0.3);
+}
+.solx-card__icon,
+.solx-header__icon,
+.solx-section-card__icon,
+.solx-bundle__icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  color: var(--sx-c);
+  background: var(--sx-s);
+}
+.solx-card__icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  margin-bottom: 26px;
+}
+.solx-card__title {
+  margin: 0 0 8px;
+  font-size: 1.12rem;
+  font-weight: 800;
+  line-height: 1.3;
+  color: #0b1220;
+}
+.solx-card__desc {
+  margin: 0 0 22px;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: #6b7a90;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+}
+.solx-card__foot {
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid #eef1f6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.solx-card__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--sx-c);
+}
+.solx-card:hover .solx-card__link svg {
+  transform: translateX(3px);
+}
+.solx-card__link svg {
+  transition: transform 0.2s ease;
+}
+.solx-card__count {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #8b97a9;
+  white-space: nowrap;
+}
+
+/* Details: top bar (back link + category tabs) */
+.solx-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+.solx-back {
+  flex-shrink: 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #26324a;
+  text-decoration: none;
+}
+.solx-back:hover {
+  color: var(--sx-c);
+}
+.solx-tabs {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.solx-tab {
+  --sx-c: #2563eb;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid #dfe5ef;
+  background: #fff;
+  color: #26324a;
+  font-size: 0.76rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+.solx-tab:hover {
+  border-color: var(--sx-c);
+  color: var(--sx-c);
+}
+.solx-tab.is-active {
+  background: var(--sx-c);
+  border-color: var(--sx-c);
+  color: #fff;
+}
+@media (max-width: 767px) {
+  .solx-topbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .solx-tabs {
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    width: 100%;
+    padding-bottom: 6px;
+    scrollbar-width: thin;
+  }
+}
+
+/* Category header card */
+.solx-header {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 28px 30px;
+  margin-bottom: 22px;
+  background: #fff;
+  border: 1px solid var(--sx-s);
+  border-radius: 22px;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+.solx-header__icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+}
+.solx-header__title {
+  margin: 0 0 4px;
+  font-size: clamp(1.4rem, 2.6vw, 1.9rem);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #0b1220;
+}
+.solx-header__desc {
+  margin: 0 0 10px;
+  font-size: 0.92rem;
+  color: #3d4a60;
+  line-height: 1.55;
+}
+.solx-header__hint {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--sx-c);
+}
+@media (max-width: 639px) {
+  .solx-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 22px 20px;
+    gap: 14px;
+  }
+}
+
+/* Accordion sections */
+.solx-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.solx-section-card {
+  background: #fff;
+  border: 1px solid #e6ebf3;
+  border-radius: 20px;
+  overflow: hidden;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.solx-section-card:hover {
+  border-color: var(--sx-s);
+  box-shadow: 0 8px 24px -16px rgba(16, 24, 40, 0.3);
+}
+.solx-section-card.is-open {
+  border-color: var(--sx-c);
+  box-shadow: 0 14px 34px -22px rgba(16, 24, 40, 0.35);
+}
+.solx-section-card__bar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  background: transparent;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+.solx-section-card__bar:focus-visible {
+  outline: 2px solid var(--sx-c);
+  outline-offset: -2px;
+  border-radius: 20px;
+}
+.solx-section-card__icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+}
+.solx-section-card__text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.solx-section-card__title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 1.02rem;
+  font-weight: 800;
+  color: #0b1220;
+}
+.solx-section-card.is-open .solx-section-card__title {
+  color: var(--sx-c);
+}
+.solx-pill {
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: #eef1f6;
+  color: #4b5a72;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+.solx-section-card__desc {
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: #6b7a90;
+}
+.solx-section-card__chev {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: #eef1f6;
+  color: #4b5a72;
+  flex-shrink: 0;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+.solx-section-card.is-open .solx-section-card__chev {
+  background: var(--sx-c);
+  color: #fff;
+}
+.solx-section-card__body {
+  padding: 18px;
+  background: #f9fbfd;
+  border-top: 1px solid #eef1f6;
+}
+
+/* Bundle cards: 2 columns, equal height, buttons pinned to the bottom */
+.solx-bundles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  align-items: stretch;
+}
+@media (max-width: 767px) {
+  .solx-bundles {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.solx-bundle {
+  display: flex;
+  flex-direction: column;
+  padding: 18px 18px 16px;
+  background: #fff;
+  border: 1px solid #e6ebf3;
+  border-radius: 16px;
+}
+.solx-bundle__top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.solx-bundle__icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+}
+.solx-badge {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--sx-s);
+  color: var(--sx-c);
+  font-size: 0.64rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.solx-bundle__price {
+  margin-left: auto;
+  font-size: 1.02rem;
+  font-weight: 800;
+  color: #0b1220;
+  white-space: nowrap;
+}
+.solx-bundle__price small {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #6b7a90;
+}
+.solx-bundle__title {
+  margin: 0 0 6px;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.4;
+  color: #0b1220;
+  overflow-wrap: anywhere;
+}
+.solx-bundle__desc {
+  margin: 0 0 12px;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: #55637a;
+}
+.solx-included {
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  background: #f6f8fb;
+  border: 1px solid #edf0f5;
+  border-radius: 12px;
+}
+.solx-included__label {
+  margin: 0 0 8px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #8b97a9;
+}
+.solx-included ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.solx-included li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.74rem;
+  line-height: 1.45;
+  color: #26324a;
+}
+.solx-included li > svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: #12a06b;
+}
+.solx-included__text {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.solx-included__text small {
+  display: block;
+  color: #8b97a9;
+  font-size: 0.68rem;
+}
+.solx-included__price {
+  flex-shrink: 0;
+  font-weight: 700;
+  color: #4b5a72;
+  white-space: nowrap;
+}
+.solx-bundle__actions {
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid #eef1f6;
+  display: flex;
+  gap: 10px;
+}
+.solx-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 700;
+  line-height: 1.2;
+  cursor: pointer;
+  transition:
+    filter 0.2s ease,
+    background 0.2s ease;
+}
+.solx-btn--primary {
+  flex: 1;
+  background: var(--sx-c);
+  color: #fff;
+}
+.solx-btn--primary:hover {
+  filter: brightness(0.92);
+}
+.solx-btn--ghost {
+  background: #f1f4f9;
+  color: #26324a;
+}
+.solx-btn--ghost:hover {
+  background: #e7ecf4;
+}
+.solx-btn:focus-visible {
+  outline: 2px solid var(--sx-c);
+  outline-offset: 2px;
+}
+@media (max-width: 479px) {
+  .solx-bundle__actions {
+    flex-direction: column;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .solx-card,
+  .solx-card__link svg,
+  .solx-section-card {
+    transition: none;
+  }
+  .solx-card:hover {
+    transform: none;
+  }
+}
+
+/* ================================================================
+   Solutions admin: bundle form dialog (BundleFormDialog / BundleListEditors)
+   Layout: content + pricing side by side on wide screens, everything stacked on narrow ones.
+   ================================================================ */
+.sbf {
+  display: grid;
+  gap: 28px;
+  min-width: 0;
+}
+.sbf__top {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+.sbf__col {
+  display: grid;
+  gap: 28px;
+  min-width: 0;
+}
+.sbf-price-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 110px;
+  gap: 10px;
+}
+
+/* Language tabs fill the available width instead of overflowing */
+.sbf-dialog .pf-lang-tabs {
+  display: flex;
+  width: 100%;
+}
+.sbf-dialog .pf-lang-tab {
+  flex: 1;
+  padding: 8px 10px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+/* One "What's included" line */
+.sbf-line {
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.sbf-line__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.sbf-picker {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+.sbf-picker .pf-input,
+.sbf-picker .ui-select-trigger,
+.sbf-line__opts .pf-input {
+  width: 100%;
+  min-width: 0;
+}
+.sbf-picker .ui-select-trigger > span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+}
+.sbf-line__summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px 16px;
+  flex-wrap: wrap;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--surface-2, #f4f6fb);
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}
+.sbf-line__summary-price {
+  text-align: right;
+  margin-left: auto;
+}
+.sbf-line__opts {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+.sbf-feature {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sbf-feature .pf-input {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 820px) {
+  .sbf__top {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+}
+
+/* Phones: near full-screen sheet, tighter padding, stacked footer buttons */
+@media (max-width: 640px) {
+  .sbf-dialog {
+    width: calc(100vw - 12px) !important;
+    max-height: calc(100dvh - 12px) !important;
+    border-radius: 12px !important;
+  }
+  .sbf-body {
+    padding: 16px 14px !important;
+  }
+  .sbf-dialog .pf-lang-tab {
+    padding: 8px 4px;
+    font-size: 0.7rem;
+    letter-spacing: 0.02em;
+  }
+  .sbf-line {
+    padding: 12px;
+  }
+  .sbf-line__summary-price {
+    text-align: left;
+    margin-left: 0;
+  }
+  .sbf-footer {
+    padding: 12px 14px !important;
+    flex-direction: column-reverse;
+    align-items: stretch !important;
+  }
+  .sbf-footer > * {
+    width: 100%;
+  }
+}
+
+/* Columns must be allowed to shrink below their content width (long select text, wide inputs) */
+.sbf,
+.sbf__col,
+.sbf .pm-section {
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+}
+.sbf .pf-field,
+.sbf .pf-input,
+.sbf .pf-textarea,
+.sbf .ui-select-trigger {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+.sbf .ui-select-trigger > span:first-child {
+  display: block;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+}
+.sbf-dialog .pf-lang-tabs {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+.sbf-dialog .pf-lang-tab {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sbf .check {
+  align-items: flex-start;
+}
+
+/* ================================================================
+   Solutions admin tables (CategoriesManager / SectionsManager / BundlesManager)
+   ================================================================ */
+/* The table scrolls inside the card instead of spilling out of it */
+.pm-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.pm-table-wrap .pm-table {
+  min-width: 720px;
+}
+.pm-table-wrap .pm-table th,
+.pm-table-wrap .pm-table td {
+  padding: 12px 14px;
+}
+.pm-table-wrap .pm-table th:first-child,
+.pm-table-wrap .pm-table td:first-child {
+  padding-left: 20px;
+}
+.pm-table-wrap .pm-table th:last-child,
+.pm-table-wrap .pm-table td:last-child {
+  padding-right: 20px;
+}
+
+/* Small icon tile (the old project thumbnail was 76x56) */
+.sol-thumb {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  color: var(--blue);
+  background: var(--blue-soft);
+}
+.pm-table-wrap .pm-project__text small {
+  max-width: 220px;
+}
+
+/* "Category / Section" badge wraps instead of stretching the table */
+.sol-cell-section .pm-badge {
+  white-space: normal;
+  max-width: 220px;
+  line-height: 1.35;
+  border-radius: 10px;
+}
+
+/* On / off switch */
+.sol-toggle {
+  position: relative;
+  width: 38px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: #cfd8e6;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  flex: none;
+}
+.sol-toggle span {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(10, 27, 61, 0.3);
+  transition: transform 0.2s ease;
+}
+.sol-toggle.is-on {
+  background: var(--blue);
+}
+.sol-toggle.is-on span {
+  transform: translateX(16px);
+}
+.sol-toggle:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+.sol-toggle:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Toolbar: filters wrap neatly on narrow screens */
+.pm-toolbar select.pf-input {
+  width: auto;
+  min-width: 140px;
+  flex: 0 1 auto;
+}
+@media (max-width: 640px) {
+  .pm-toolbar select.pf-input {
+    flex: 1 1 140px;
+    max-width: none !important;
   }
 }

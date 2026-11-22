@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { type Dict, type Locale } from "@/lib/i18n";
 import { formatDate } from "@/lib/format";
-import { useGetInquiriesQuery, type Inquiry } from "@/redux/fetchers/inquiry/inquiryApi";
+import { useGetInquiriesQuery, inquiryTargetName, type Inquiry } from "@/redux/fetchers/inquiry/inquiryApi";
 import { useGetProductsQuery } from "@/redux/fetchers/product/productApi";
 import { useGetAllUsersQuery } from "@/redux/fetchers/user/userApi";
 import { useGetCategoriesQuery } from "@/redux/fetchers/category/categoryApi";
@@ -37,8 +37,7 @@ function getStatusLabel(status: string, t: Dict) {
 }
 
 function getProductName(inq: Inquiry, lang: string) {
-  const trans = inq.product?.translations?.find((x) => x.lang === lang.toUpperCase());
-  return trans?.name ?? "—";
+  return inquiryTargetName(inq, lang);
 }
 
 export default function AdminDashboardClient({ lang, t, base }: Props) {

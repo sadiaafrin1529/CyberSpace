@@ -6,12 +6,9 @@ import { notFound, redirect } from "next/navigation";
 import { getDict, isLocale, type Locale } from "@/lib/i18n";
 import { pageMeta } from "@/lib/seo";
 import { FadeDown, FadeLeft, FadeRight, FadeUp } from "@/components/Motion";
-import { CACHE_TAGS, serverGet } from "@/lib/server-api";
-import type { Solution } from "@/redux/fetchers/solution/solutionApi";
 import { ABOUT } from "@/lib/about-content";
-import SolutionCard from "@/components/solutions/SolutionCard";
 
-const PAGES = ["about", "solutions", "contact"] as const;
+const PAGES = ["about", "contact"] as const;
 type PageKey = (typeof PAGES)[number];
 
 export async function generateMetadata({
@@ -166,10 +163,6 @@ const FAQS = [
   },
 ];
 
-/** null (not []) on failure, so the page can tell "backend down" from "no solutions yet". */
-const fetchActiveSolutions = () =>
-  serverGet<Solution[] | null>("/solutions/active", null, [CACHE_TAGS.solutions]);
-
 /* ── Render ──────────────────────────────────────────────────── */
 export default async function InfoPage({
   params,
@@ -184,7 +177,6 @@ export default async function InfoPage({
   const key = page as PageKey;
   const L = lang as Locale;
   const A = ABOUT[L];
-  const solutions = key === "solutions" ? await fetchActiveSolutions() : null;
 
   return (
     <>
@@ -232,64 +224,6 @@ export default async function InfoPage({
               </div>
             </section>
           ))}
-        </div>
-      )}
-
-      {/* ═══════════ SOLUTIONS ═══════════ */}
-      {key === "solutions" && (
-        <div className="info-body">
-          <section className="container section">
-            <FadeUp className="info-section-head">
-              <p className="eyebrow cats-eyebrow">
-                {{ en: "What we offer", az: "Nə təklif edirik", ru: "Что мы предлагаем" }[L]}
-              </p>
-              <h2>
-                {
-                  {
-                    en: "End-to-End IT Solutions",
-                    az: "Tam Həcmli IT Həlləri",
-                    ru: "Комплексные IT-решения",
-                  }[L]
-                }
-              </h2>
-              <p className="info-lead">
-                {
-                  {
-                    en: "From servers and networking to security and software — we design and deliver complete technology environments tailored to your business.",
-                    az: "Serverlərdən şəbəkəyə, təhlükəsizlikdən proqrama qədər — biznesinizə uyğunlaşdırılmış tam texnologiya mühitlərini dizayn edir və çatdırırıq.",
-                    ru: "От серверов и сетей до безопасности и программного обеспечения — проектируем и поставляем комплексные технологические среды под ваш бизнес.",
-                  }[L]
-                }
-              </p>
-            </FadeUp>
-            {solutions === null ? (
-              <p className="muted" role="alert">
-                {
-                  {
-                    en: "Solutions could not be loaded right now. Please try again shortly.",
-                    az: "Həllər hazırda yüklənə bilmədi. Zəhmət olmasa bir az sonra yenidən cəhd edin.",
-                    ru: "Не удалось загрузить решения. Пожалуйста, повторите попытку позже.",
-                  }[L]
-                }
-              </p>
-            ) : solutions.length === 0 ? (
-              <p className="muted">
-                {
-                  {
-                    en: "No solutions are published yet.",
-                    az: "Hələ heç bir həll dərc edilməyib.",
-                    ru: "Решения пока не опубликованы.",
-                  }[L]
-                }
-              </p>
-            ) : (
-              <div className="sol-grid">
-                {solutions.map((s, i) => (
-                  <SolutionCard key={s.id} solution={s} delay={(i % 3) * 0.07} />
-                ))}
-              </div>
-            )}
-          </section>
         </div>
       )}
 

@@ -12,8 +12,8 @@ export type Dict = {
     | "about"
     | "team"
     | "products"
-    | "solutions"
     | "projects"
+    | "solutions"
     | "partners"
     | "news"
     | "careers"
@@ -42,8 +42,8 @@ const en: Dict = {
     about: "About Us",
     team: "Our Team",
     products: "Products",
-    solutions: "Solutions",
     projects: "Projects",
+    solutions: "Solutions",
     partners: "Partners",
     careers: "Careers",
     news: "News",
@@ -93,7 +93,6 @@ const en: Dict = {
     heroText:
       "We deliver reliable IT products, solutions and services to help businesses grow and stay secure.",
     exploreProducts: "Explore Products",
-    ourSolutions: "Our Solutions",
     f1t: "Wide Product Portfolio",
     f1d: "from global brands",
     f2t: "Professional Support",
@@ -376,8 +375,8 @@ const az: Dict = {
     about: "Haqqımızda",
     team: "Komandamız",
     products: "Məhsullar",
-    solutions: "Həllər",
     projects: "Layihələr",
+    solutions: "Həllər",
     partners: "Tərəfdaşlar",
     careers: "Karyera",
     news: "Xəbərlər",
@@ -427,7 +426,6 @@ const az: Dict = {
     heroText:
       "Biznesin böyüməsi və təhlükəsiz qalması üçün etibarlı İT məhsulları, həllər və xidmətlər təqdim edirik.",
     exploreProducts: "Məhsullara bax",
-    ourSolutions: "Həllərimiz",
     f1t: "Geniş məhsul çeşidi",
     f1d: "qlobal brendlərdən",
     f2t: "Peşəkar dəstək",
@@ -709,8 +707,8 @@ const ru: Dict = {
     about: "О нас",
     team: "Наша команда",
     products: "Продукты",
-    solutions: "Решения",
     projects: "Проекты",
+    solutions: "Решения",
     partners: "Партнёры",
     careers: "Карьера",
     news: "Новости",
@@ -760,7 +758,6 @@ const ru: Dict = {
     heroText:
       "Мы поставляем надёжные ИТ-продукты, решения и услуги, чтобы бизнес рос и оставался защищённым.",
     exploreProducts: "Смотреть продукты",
-    ourSolutions: "Наши решения",
     f1t: "Широкий ассортимент",
     f1d: "от мировых брендов",
     f2t: "Профессиональная поддержка",

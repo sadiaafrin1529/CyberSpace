@@ -17,6 +17,8 @@ export default function ContactModal() {
   const { t } = useLang();
   const dispatch = useAppDispatch();
   const productId = useAppSelector((s) => s.inquiry.modalProductId);
+  const bundle = useAppSelector((s) => s.inquiry.modalBundle);
+  const targetKey = productId ?? (bundle ? `bundle-${bundle.id}` : null);
   const { data: products = [] } = useGetProductsQuery();
   const product = products.find((p) => p.id === productId) ?? null;
 
@@ -33,12 +35,12 @@ export default function ContactModal() {
   const submittingRef = useRef(false);
 
   useEffect(() => {
-    if (!productId) return;
+    if (!targetKey) return;
     setErrors({});
     setErrMsg(null);
     setName("");
     setPhone("");
-    setMessage("");
+    setMessage(bundle?.message ?? "");
     setHuman(false);
     setTrap("");
     submittingRef.current = false;
@@ -52,9 +54,10 @@ export default function ContactModal() {
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
     };
-  }, [productId, dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [targetKey, dispatch]);
 
-  if (!productId || !product) return null;
+  if (bundle ? false : !productId || !product) return null;
 
   const close = () => dispatch(closeInquiry());
 
@@ -73,7 +76,7 @@ export default function ContactModal() {
     setErrMsg(null);
     try {
       const result = await submitInquiry({
-        productId: product.id,
+        ...(bundle ? { bundleId: bundle.id } : { productId: product!.id }),
         name: name.trim(),
         phone: phone.trim(),
         message: message.trim() || undefined,
@@ -119,24 +122,32 @@ export default function ContactModal() {
           </button>
         </div>
 
-        <div className="modal__product">
-          <div className="modal__thumb">
-            {product.imageUrl ? (
-              <img src={product.imageUrl} alt={product.name} className="modal__thumb-img" />
-            ) : (
-              <ProductImage category={product.category as CategoryId} label="" />
-            )}
+        {bundle ? (
+          <div className="modal__product">
+            <div className="modal__product-info">
+              <strong className="modal__product-name">{bundle.title}</strong>
+            </div>
           </div>
-          <div className="modal__product-info">
-            <strong className="modal__product-name">{product.name}</strong>
-            <span className="modal__product-sku">{product.sku}</span>
-            {product.price != null && (
-              <span className="modal__product-price">
-                {product.price} {product.currency ?? ""}
-              </span>
-            )}
+        ) : (
+          <div className="modal__product">
+            <div className="modal__thumb">
+              {product!.imageUrl ? (
+                <img src={product!.imageUrl} alt={product!.name} className="modal__thumb-img" />
+              ) : (
+                <ProductImage category={product!.category as CategoryId} label="" />
+              )}
+            </div>
+            <div className="modal__product-info">
+              <strong className="modal__product-name">{product!.name}</strong>
+              <span className="modal__product-sku">{product!.sku}</span>
+              {product!.price != null && (
+                <span className="modal__product-price">
+                  {product!.price} {product!.currency ?? ""}
+                </span>
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
         <form onSubmit={submit} noValidate>
           <div className="field">

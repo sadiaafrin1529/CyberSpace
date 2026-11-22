@@ -5,7 +5,7 @@ import type {
   ProjectSummary,
 } from "@/redux/fetchers/project/projectApi";
 
-/** Same rule as Solutions, News and Careers: the visitor's language, else English, else the first available. */
+/** Same rule as News and Careers: the visitor's language, else English, else the first available. */
 export const pickLang = <T extends { lang: string }>(items: T[], lang: Locale): T | undefined =>
   items.find((t) => t.lang === lang.toUpperCase()) ?? items.find((t) => t.lang === "EN") ?? items[0];
 

@@ -1,17 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useGetUserInquiriesQuery } from "@/redux/fetchers/inquiry/inquiryApi";
+import { useGetUserInquiriesQuery, inquiryTargetName, type Inquiry } from "@/redux/fetchers/inquiry/inquiryApi";
 import { useMeQuery } from "@/redux/fetchers/auth/authApi";
 import { formatDate } from "@/lib/format";
 import type { Dict, Locale } from "@/lib/i18n";
 
-function getProductName(
-  inq: { product?: { translations?: { lang: string; name: string }[] } },
-  lang: string,
-) {
-  const trans = inq.product?.translations?.find((x) => x.lang === lang.toUpperCase());
-  return trans?.name ?? "—";
+function getProductName(inq: Pick<Inquiry, "product" | "bundle">, lang: string) {
+  return inquiryTargetName(inq, lang);
 }
 
 export default function SalesDashboardClient({ lang, t }: { lang: string; t: Dict }) {

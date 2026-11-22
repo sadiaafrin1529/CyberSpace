@@ -19,8 +19,8 @@ import {
   X,
   Briefcase,
   FileText,
-  Lightbulb,
   FolderKanban,
+  Lightbulb,
 } from "lucide-react";
 import type { Dict } from "@/lib/i18n";
 import type { JwtUser } from "@/lib/server-auth";
