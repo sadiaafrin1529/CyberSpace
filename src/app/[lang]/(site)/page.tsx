@@ -9,6 +9,7 @@ import { pageMeta } from "@/lib/seo";
 import { CACHE_TAGS, serverGet } from "@/lib/server-api";
 import { FadeDown, FadeLeft, FadeRight, FadeUp, ZoomIn } from "@/components/Motion";
 import PartnersCarousel from "@/components/PartnersCarousel";
+import HomeIndustries from "@/components/industries/HomeIndustries";
 import HomeSolutions from "@/components/solutions/HomeSolutions";
 import heroSvg from "@/assets/animated-ai-hero.svg";
 import logo_akronex from "@/assets/Logo/akronex_logo_-removebg-preview.png";
@@ -662,6 +663,9 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
 
       {/* ── Solutions (database-driven) ── */}
       <HomeSolutions lang={L} />
+
+      {/* ── Industries We Serve ── */}
+      <HomeIndustries lang={L} />
 
       {/* ── Why Choose Us ── */}
       <section className="why-section">

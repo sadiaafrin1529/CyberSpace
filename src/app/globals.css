@@ -10813,3 +10813,611 @@ button.smodal__chip {
     transform: none;
   }
 }
+
+/* ── Industries We Serve (homepage bento with animated SVG scenes) ─────────── */
+.ib-section {
+  background: #f7f9fc;
+  padding: 8px 0 72px;
+}
+@media (max-width: 767px) {
+  .ib-section {
+    padding: 0 0 56px;
+  }
+}
+.ib-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: 196px;
+  grid-auto-flow: dense;
+  gap: 16px;
+}
+.ib-cell {
+  display: flex;
+  min-width: 0;
+  position: relative;
+}
+.ib-cell:hover,
+.ib-cell:focus-within,
+.ib-cell:has(.is-active) {
+  z-index: 3;
+}
+.ib-cell--wide {
+  grid-column: span 2;
+}
+@media (max-width: 1023px) {
+  .ib-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 639px) {
+  .ib-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: 184px;
+    gap: 14px;
+  }
+  .ib-cell--wide {
+    grid-column: auto;
+  }
+}
+
+.ib-card {
+  /* palette: --aN = resting colour, --hN = hover colour, --c1..4 = live values used by the SVGs */
+  --mx: 50%;
+  --my: 50%;
+  --c1: var(--a1);
+  --c2: var(--a2);
+  --c3: var(--a3);
+  --c4: var(--a4);
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  padding: 20px 20px 22px;
+  border-radius: 22px;
+  border: 1px solid rgba(15, 23, 42, 0.07);
+  background: linear-gradient(135deg, var(--bg1), var(--bg2));
+  box-shadow:
+    0 1px 2px rgba(16, 24, 40, 0.05),
+    0 8px 16px -12px rgba(16, 24, 40, 0.16);
+  cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s ease,
+    border-color 0.3s ease;
+}
+.ib-card::before,
+.ib-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.ib-card::after {
+  background: var(--hg);
+}
+.ib-card::before {
+  z-index: 1;
+  background: radial-gradient(
+    240px circle at var(--mx) var(--my),
+    color-mix(in srgb, var(--ha) 26%, transparent),
+    transparent 70%
+  );
+}
+.ib-card:is(:hover, :focus-within, .is-active) {
+  --c1: var(--h1);
+  --c2: var(--h2);
+  --c3: var(--h3);
+  --c4: var(--h4);
+  transform: translateY(-5px);
+  border-color: var(--ha);
+  box-shadow:
+    0 0 0 1px var(--ha),
+    0 22px 38px -18px color-mix(in srgb, var(--ha) 60%, transparent);
+}
+.ib-card:is(:hover, :focus-within, .is-active)::before,
+.ib-card:is(:hover, :focus-within, .is-active)::after {
+  opacity: 1;
+}
+
+/* Per-industry palette */
+.ib-card--banking {
+  --bg1: #fffbe8;
+  --bg2: #ecfff3;
+  --ha: #d99a14;
+  --hg: linear-gradient(135deg, rgba(255, 236, 170, 0.75), rgba(190, 245, 215, 0.7));
+  --a1: #e8b45d;
+  --h1: #f0a81a;
+  --a2: #dfb36b;
+  --h2: #d99a14;
+  --a3: #f4e4b8;
+  --h3: #fff0bd;
+  --a4: #55b98c;
+  --h4: #1f9d5e;
+}
+.ib-card--oilgas {
+  --bg1: #fff2ea;
+  --bg2: #fdeeee;
+  --ha: #e2561f;
+  --hg: linear-gradient(135deg, rgba(255, 206, 184, 0.8), rgba(252, 190, 190, 0.55));
+  --a1: #ee9a74;
+  --h1: #e2561f;
+  --a2: #eb946d;
+  --h2: #d9480f;
+  --a3: #bf707b;
+  --h3: #a8323c;
+  --a4: #f2a581;
+  --h4: #e86a2c;
+}
+.ib-card--health {
+  --bg1: #fdeef0;
+  --bg2: #edfbf1;
+  --ha: #d0104c;
+  --hg: linear-gradient(135deg, rgba(255, 196, 214, 0.85), rgba(196, 244, 214, 0.8));
+  --a1: #e0749a;
+  --h1: #d0104c;
+  --a2: #7fd8b0;
+  --h2: #12b886;
+  --a3: #e0749a;
+  --h3: #d0104c;
+  --a4: #e0749a;
+  --h4: #d0104c;
+}
+.ib-card--gov {
+  --bg1: #eff2ff;
+  --bg2: #f4f4f7;
+  --ha: #2d46a0;
+  --hg: linear-gradient(135deg, rgba(200, 210, 245, 0.95), rgba(225, 229, 245, 0.7));
+  --a1: #cdd3ea;
+  --h1: #aebcf0;
+  --a2: #8591c2;
+  --h2: #2d46a0;
+  --a3: #8591c2;
+  --h3: #2f5fe0;
+  --a4: #e97d8d;
+  --h4: #e0364f;
+}
+.ib-card--transport {
+  --bg1: #eaf6ff;
+  --bg2: #e2f1fb;
+  --ha: #1f8fc4;
+  --hg: linear-gradient(135deg, rgba(186, 226, 247, 0.85), rgba(206, 232, 248, 0.7));
+  --a1: #8fd0ee;
+  --h1: #5cc0ee;
+  --a2: #4ba3d6;
+  --h2: #1f8fc4;
+  --a3: #8ac9e8;
+  --h3: #4aa8d8;
+  --a4: #8ac9e8;
+  --h4: #4aa8d8;
+}
+.ib-card--education {
+  --bg1: #f4eefc;
+  --bg2: #fdf9de;
+  --ha: #7a2fe0;
+  --hg: linear-gradient(135deg, rgba(222, 200, 250, 0.95), rgba(253, 240, 200, 0.85));
+  --a1: #b182e6;
+  --h1: #7a2fe0;
+  --a2: #e8def7;
+  --h2: #efe4ff;
+  --a3: #b182e6;
+  --h3: #7a2fe0;
+  --a4: #f1c15d;
+  --h4: #f5a623;
+}
+.ib-card--telecom {
+  --bg1: #eafcf6;
+  --bg2: #edf3ff;
+  --ha: #14a187;
+  --hg: linear-gradient(135deg, rgba(190, 240, 225, 0.9), rgba(205, 220, 250, 0.85));
+  --a1: #7fd0bd;
+  --h1: #14a187;
+  --a2: #8aa4f0;
+  --h2: #3b6cf0;
+  --a3: #7fd0bd;
+  --h3: #14a187;
+  --a4: #8aa4f0;
+  --h4: #3b6cf0;
+}
+.ib-card--construction {
+  --bg1: #fff7e2;
+  --bg2: #faf7f1;
+  --ha: #d97706;
+  --hg: linear-gradient(135deg, rgba(250, 222, 170, 0.85), rgba(240, 228, 214, 0.85));
+  --a1: #a0a6b0;
+  --h1: #5d6674;
+  --a2: #e2aa6a;
+  --h2: #e07a10;
+  --a3: #e7b06b;
+  --h3: #d97706;
+  --a4: #f3d6ae;
+  --h4: #f6c47a;
+}
+
+/* Icon chip */
+.ib-chip {
+  position: absolute;
+  top: 18px;
+  left: 20px;
+  z-index: 2;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: #fff;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  box-shadow: 0 4px 10px -4px rgba(16, 24, 40, 0.18);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.ib-card:is(:hover, :focus-within, .is-active) .ib-chip {
+  transform: scale(1.08) rotate(-4deg);
+}
+
+/* Illustration */
+.ib-art {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  z-index: 1;
+  width: 132px;
+  pointer-events: none;
+  transform-origin: 70% 40%;
+  transition: transform 0.55s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+.ib-art svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.ib-card--transport .ib-art {
+  width: 190px;
+}
+.ib-card:is(:hover, :focus-within, .is-active) .ib-art {
+  transform: scale(1.14);
+}
+.ib-card--education:is(:hover, :focus-within, .is-active) .ib-art,
+.ib-card--health:is(:hover, :focus-within, .is-active) .ib-art {
+  transform: scale(1.06);
+}
+.ib-card .f1 { fill: var(--c1); }
+.ib-card .f2 { fill: var(--c2); }
+.ib-card .f3 { fill: var(--c3); }
+.ib-card .f4 { fill: var(--c4); }
+.ib-card .s1 { stroke: var(--c1); }
+.ib-card .s2 { stroke: var(--c2); }
+.ib-card .s3 { stroke: var(--c3); }
+.ib-card .s4 { stroke: var(--c4); }
+.ib-card .s-white { stroke: #fff; }
+.ib-card :is(.f1, .f2, .f3, .f4) { transition: fill 0.4s ease; }
+.ib-card :is(.s1, .s2, .s3, .s4) { transition: stroke 0.4s ease; }
+.ib-art :is(g, rect, path, circle, ellipse, text) {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* Text */
+.ib-body {
+  position: relative;
+  z-index: 2;
+}
+.ib-title {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: #0b1220;
+}
+.ib-reveal {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.3s ease;
+}
+.ib-reveal__in {
+  overflow: hidden;
+  min-height: 0;
+}
+.ib-card:is(:hover, :focus-within, .is-active) .ib-reveal {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.ib-desc {
+  margin: 6px 0 8px;
+  max-width: 34ch;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: #475569;
+}
+.ib-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: var(--ha);
+  text-decoration: none;
+}
+.ib-more svg {
+  transition: transform 0.25s ease;
+}
+.ib-more:hover svg {
+  transform: translateX(3px);
+}
+@media (hover: hover) {
+  /* whole card is clickable with a mouse; on touch the first tap only opens it */
+  .ib-more::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+  }
+}
+
+/* ── Banking: coins drop and flip into the card ── */
+.ib-card:is(:hover, :focus-within, .is-active) .ib-bank-coin--a {
+  animation: ib-coin-bounce 1.3s ease-in-out infinite;
+}
+.ib-card:is(:hover, :focus-within, .is-active) .ib-bank-coin--b {
+  animation: ib-coin-flip 1.3s ease-in-out infinite 0.25s;
+}
+.ib-card:is(:hover, :focus-within, .is-active) .ib-bank-card {
+  animation: ib-card-nudge 1.3s ease-in-out infinite;
+}
+.ib-bank-sign {
+  font: 800 17px/1 system-ui, sans-serif;
+  fill: #fff;
+}
+@keyframes ib-coin-bounce {
+  0%, 100% { translate: 0 0; }
+  35% { translate: 0 -13px; }
+  62% { translate: 0 6px; }
+  80% { translate: 0 -2px; }
+}
+@keyframes ib-coin-flip {
+  0%, 100% { scale: 1 1; translate: 0 0; }
+  30% { scale: 1 1; translate: 0 -12px; }
+  50% { scale: 0.12 1; translate: 0 -14px; }
+  70% { scale: 1 1; translate: 0 4px; }
+}
+@keyframes ib-card-nudge {
+  0%, 100% { scale: 1; }
+  60% { scale: 1.05 0.94; }
+}
+
+/* ── Oil & gas: pump arm nods, tank level sloshes, drop falls ── */
+.ib-oil-arm {
+  transform-box: view-box;
+  transform-origin: 34px 42px;
+}
+.ib-oil-drip {
+  opacity: 0;
+}
+.ib-oil-fill rect {
+  transform-origin: 50% 100%;
+}
+.ib-card:is(:hover, :focus-within, .is-active) .ib-oil-arm {
+  animation: ib-oil-nod 1.6s ease-in-out infinite;
+}
+.ib-card:is(:hover, :focus-within, .is-active) .ib-oil-fill rect {
+  animation: ib-oil-level 1.6s ease-in-out infinite;
+}
+.ib-card:is(:hover, :focus-within, .is-active) .ib-oil-drip {
+  animation: ib-oil-drip 1.6s ease-in infinite;
+}
+@keyframes ib-oil-nod {
+  0%, 100% { rotate: 0deg; }
+  50% { rotate: -11deg; }
+}
+@keyframes ib-oil-level {
+  0%, 100% { scale: 1 1; }
+  50% { scale: 1 0.55; }
+}
+@keyframes ib-oil-drip {
+  0% { opacity: 0; translate: 0 -4px; }
+  25% { opacity: 1; translate: 0 0; }
+  100% { opacity: 0; translate: 0 36px; }
+}
+
+/* ── Healthcare: cross beats, ECG line runs ── */
+.ib-health-cross {
+  transition: scale 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.ib-card:is(:hover, :focus-within, .is-active) .ib-health-cross {
+  scale: 1.32;
+  animation: ib-heartbeat 1.1s ease-in-out infinite 0.4s;
+}
+.ib-card:is(:hover, :focus-within, .is-active) .ib-health-ecg {
+  stroke-dasharray: 100;
+  animation: ib-ecg 1.6s linear infinite;
+}
+@keyframes ib-heartbeat {
+  0%, 100% { scale: 1.32; }
+  15% { scale: 1.5; }
+  30% { scale: 1.34; }
+  45% { scale: 1.46; }
+  60% { scale: 1.32; }
+}
+@keyframes ib-ecg {
+  from { stroke-dashoffset: 100; }
+  to { stroke-dashoffset: -100; }
+}
+
+/* ── Government: pillars rise, flag waves ── */
+.ib-gov {
+  transform-origin: 50% 100%;
+  transition: scale 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.ib-gov-col {
+  transform-origin: 50% 100%;
+}
+.ib-gov-flag {
+  transform-origin: 0 50%;
+}
+.ib-card:is(:hover, :focus-within, .is-active) .ib-gov {
+  scale: 1.22;
+}
+.ib-card:is(:hover, :focus-within, .is-active) .ib-gov-col {
+  animation: ib-pillar 2.8s cubic-bezier(0.34, 1.3, 0.64, 1) infinite;
+  animation-delay: calc(var(--i) * 0.14s);
+}
+.ib-card:is(:hover, :focus-within, .is-active) .ib-gov-flag {
+  animation: ib-wave 0.9s ease-in-out infinite alternate;
+}
+@keyframes ib-pillar {
+  0% { scale: 1 0.35; }
+  25%, 78% { scale: 1 1; }
+  95%, 100% { scale: 1 0.35; }
+}
+@keyframes ib-wave {
+  from { transform: skewY(-9deg) scaleX(1); }
+  to { transform: skewY(8deg) scaleX(0.82); }
+}
+
+/* ── Transport: paper plane follows the dashed route ── */
+.ib-cloud {
+  fill: rgba(255, 255, 255, 0.85);
+}
+.ib-plane {
+  transform-box: view-box;
+}
+.ib-card:is(:hover, :focus-within, .is-active) .ib-dash {
+  animation: ib-dash 0.9s linear infinite;
+}
+.ib-card:is(:hover, :focus-within, .is-active) .ib-plane {
+  animation: ib-fly 2.6s ease-in-out infinite;
+}
+.ib-card:is(:hover, :focus-within, .is-active) .ib-cloud--a {
+  animation: ib-drift 3s ease-in-out infinite alternate;
+}
+.ib-card:is(:hover, :focus-within, .is-active) .ib-cloud--b {
+  animation: ib-drift 3.6s ease-in-out infinite alternate-reverse;
+}
+@keyframes ib-dash {
+  to { stroke-dashoffset: -28; }
+}
+@keyframes ib-fly {
+  0% { translate: -86px 42px; opacity: 0; }
+  10% { opacity: 1; }
+  30% { translate: -52px 33px; }
+  50% { translate: -23px 17px; }
+  75% { translate: 6px -5px; opacity: 1; }
+  100% { translate: 40px -36px; opacity: 0; }
+}
+@keyframes ib-drift {
+  from { translate: -8px 0; }
+  to { translate: 10px -3px; }
+}
+
+/* ── Education: cap lifts off, tassel swings, sparks twinkle ── */
+.ib-spark {
+  fill: #f2c066;
+}
+.ib-spark--c {
+  fill: #b9a3ec;
+}
+.ib-edu {
+  transition: translate 0.55s cubic-bezier(0.34, 1.56, 0.64, 1), rotate 0.55s ease, scale 0.55s ease;
+}
+.ib-edu-tassel {
+  transform-box: view-box;
+  transform-origin: 106px 44px;
+}
+.ib-card:is(:hover, :focus-within, .is-active) .ib-edu {
+  translate: 6px -12px;
+  rotate: -7deg;
+  scale: 1.2;
+}
+.ib-card:is(:hover, :focus-within, .is-active) .ib-edu {
+  animation: ib-cap-bob 2.2s ease-in-out infinite 0.6s;
+}
+@keyframes ib-cap-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-6px) rotate(3deg); }
+}
+.ib-card:is(:hover, :focus-within, .is-active) .ib-edu-tassel {
+  animation: ib-swing 1.1s ease-in-out infinite alternate;
+}
+.ib-card:is(:hover, :focus-within, .is-active) .ib-spark {
+  animation: ib-twinkle 1.4s ease-in-out infinite;
+}
+.ib-card:is(:hover, :focus-within, .is-active) .ib-spark--b {
+  animation-delay: 0.35s;
+}
+.ib-card:is(:hover, :focus-within, .is-active) .ib-spark--c {
+  animation-delay: 0.7s;
+}
+@keyframes ib-swing {
+  from { rotate: -14deg; }
+  to { rotate: 14deg; }
+}
+@keyframes ib-twinkle {
+  0%, 100% { scale: 1; translate: 0 0; opacity: 1; }
+  50% { scale: 1.6; translate: 0 -6px; opacity: 0.55; }
+}
+
+/* ── Telecom: signal rings pulse out of the dish ── */
+.ib-tel-ring {
+  opacity: 0;
+}
+.ib-card:is(:hover, :focus-within, .is-active) .ib-tel-ring {
+  animation: ib-ring 1.8s ease-out infinite;
+}
+.ib-card:is(:hover, :focus-within, .is-active) .ib-tel-ring--b {
+  animation-delay: 0.9s;
+}
+.ib-card:is(:hover, :focus-within, .is-active) .ib-tel-dot {
+  animation: ib-dot 0.9s ease-in-out infinite alternate;
+}
+@keyframes ib-ring {
+  0% { scale: 0.45; opacity: 0.9; }
+  100% { scale: 1.75; opacity: 0; }
+}
+@keyframes ib-dot {
+  from { scale: 1; }
+  to { scale: 1.3; }
+}
+
+/* ── Construction: arm sways, load swings on its cable ── */
+.ib-crane-arm {
+  transform-box: view-box;
+  transform-origin: 39px 21px;
+}
+.ib-crane-load {
+  transform-box: view-box;
+  transform-origin: 92px 16px;
+}
+.ib-card:is(:hover, :focus-within, .is-active) .ib-crane-arm {
+  animation: ib-crane 2.4s ease-in-out infinite;
+}
+.ib-card:is(:hover, :focus-within, .is-active) .ib-crane-load {
+  animation: ib-load 1.2s ease-in-out infinite alternate;
+}
+@keyframes ib-crane {
+  0%, 100% { rotate: 0deg; }
+  50% { rotate: -6deg; }
+}
+@keyframes ib-load {
+  from { rotate: -9deg; }
+  to { rotate: 9deg; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ib-card,
+  .ib-card *,
+  .ib-card::before,
+  .ib-card::after {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}
