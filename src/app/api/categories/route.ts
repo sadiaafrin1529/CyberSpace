@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuthToken, BACKEND_URL } from "@/lib/server-auth";
 import { CACHE_TAGS, revalidateIfOk } from "@/lib/server-api";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const res = await fetch(`${BACKEND_URL}/categories`, { cache: "no-store" });
+    const res = await fetch(`${BACKEND_URL}/categories${req.nextUrl.search}`, { cache: "no-store" });
     if (!res.ok) return NextResponse.json({ data: [] }, { status: res.status });
     return NextResponse.json(await res.json());
   } catch {

@@ -10,6 +10,7 @@ import { useDebouncedValue } from "@/lib/useDebouncedValue";
 import { highlightParts, searchProducts, tokenize } from "@/lib/productSearch";
 import { useGetProductsQuery } from "@/redux/fetchers/product/productApi";
 import { useGetSettingsQuery } from "@/redux/fetchers/settings/settingsApi";
+import { buildTree, flattenTree } from "@/lib/categoryTree";
 import { useGetCategoriesQuery } from "@/redux/fetchers/category/categoryApi";
 import { PriceText, StockBadge } from "./ProductCard";
 import ProductImage from "./ProductImage";
@@ -109,20 +110,24 @@ export default function SearchModal({
   );
 
   // Nothing is shown until the real categories have loaded, so the static fallback never flashes.
-  const categories = useMemo(
+  const categories = useMemo<
+    { id: string; depth: number; name: { en: string; az: string; ru: string } }[]
+  >(
     () =>
       catsLoading
         ? []
         : dbCats.length > 0
-          ? dbCats
-              .filter((c) => c.isActive)
-              .map((c) => ({ id: c.slug, name: { en: c.nameEN, az: c.nameAZ, ru: c.nameRU } }))
-          : CATEGORIES,
+          ? flattenTree(buildTree(dbCats, { activeOnly: true })).map(({ node: c, depth }) => ({
+              id: c.slug,
+              depth,
+              name: { en: c.nameEN, az: c.nameAZ, ru: c.nameRU },
+            }))
+          : CATEGORIES.map((c) => ({ ...c, depth: 0 })),
     [dbCats, catsLoading],
   );
   const categoryName = (p: PublicProduct) => {
     const c = categories.find((x) => x.id === p.category);
-    return c ? (c.name[lang] ?? c.name.en) : "";
+    return c ? c.name[lang] || c.name.en : "";
   };
 
   // Brands that really exist in the catalogue, most products first: one-click starting points.
@@ -343,16 +348,18 @@ export default function SearchModal({
                       <span>{t.common.searchCategories}</span>
                     </div>
                     <div className="smodal__chips">
-                      {categories.map((c) => (
-                        <Link
-                          key={c.id}
-                          href={`/${lang}/shop?category=${encodeURIComponent(c.id)}`}
-                          className="smodal__chip"
-                          onClick={close}
-                        >
-                          {c.name[lang] ?? c.name.en}
-                        </Link>
-                      ))}
+                      {categories
+                        .filter((c) => c.depth === 0)
+                        .map((c) => (
+                          <Link
+                            key={c.id}
+                            href={`/${lang}/shop?category=${encodeURIComponent(c.id)}`}
+                            className="smodal__chip"
+                            onClick={close}
+                          >
+                            {c.name[lang] || c.name.en}
+                          </Link>
+                        ))}
                     </div>
                   </>
                 )}

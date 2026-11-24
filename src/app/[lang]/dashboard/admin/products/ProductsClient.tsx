@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   useGetProductsQuery,
   useCreateProductMutation,
@@ -10,6 +10,8 @@ import {
 } from "@/redux/fetchers/product/productApi";
 import { useGetCategoriesQuery } from "@/redux/fetchers/category/categoryApi";
 import ImageUpload from "@/components/dashboard/ImageUpload";
+import CategoryTreePicker from "@/components/dashboard/CategoryTreePicker";
+import { buildTree, pathTo } from "@/lib/categoryTree";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
@@ -155,6 +157,7 @@ function PfField({
 export default function ProductsClient({ t }: { t: Dict }) {
   const { data: products = [], isLoading } = useGetProductsQuery();
   const { data: categories = [] } = useGetCategoriesQuery();
+  const catTree = useMemo(() => buildTree(categories), [categories]);
   const [create, { isLoading: creating }] = useCreateProductMutation();
   const [update, { isLoading: updating }] = useUpdateProductMutation();
   const [deleteProduct, { isLoading: deleting }] = useDeleteProductMutation();
@@ -171,7 +174,7 @@ export default function ProductsClient({ t }: { t: Dict }) {
 
   function openCreate() {
     setEditing(null);
-    setForm(emptyForm(categories[0]?.slug ?? ""));
+    setForm(emptyForm());
     setError("");
     setSuccess("");
     setActiveLang("EN");
@@ -203,6 +206,10 @@ export default function ProductsClient({ t }: { t: Dict }) {
     setError("");
     if (!form.sku.trim()) {
       setError("SKU is required.");
+      return;
+    }
+    if (!form.category) {
+      setError("Please select a category.");
       return;
     }
     if (!form.EN.name.trim()) {
@@ -410,10 +417,11 @@ export default function ProductsClient({ t }: { t: Dict }) {
                   <td>{p.brand || "—"}</td>
                   <td>
                     {(() => {
-                      const name =
-                        categories.find((c) => c.slug === p.category)?.nameEN ?? p.category;
+                      const path = pathTo(catTree, p.category);
+                      const name = path.length ? path[path.length - 1].nameEN : p.category;
+                      const full = path.length ? path.map((n) => n.nameEN).join(" › ") : p.category;
                       return (
-                        <span className="dash-pill" title={name}>
+                        <span className="dash-pill" title={full}>
                           {name}
                         </span>
                       );
@@ -510,7 +518,7 @@ export default function ProductsClient({ t }: { t: Dict }) {
 
               {/* ── Section 1: Basic Information ── */}
               <SectionHead first icon={<Tag size={12} />} label="Basic Information" />
-              <div className="pf-grid-3">
+              <div className="pf-grid-2">
                 <PfField id="pr-sku" label="SKU" required>
                   <input
                     id="pr-sku"
@@ -534,21 +542,16 @@ export default function ProductsClient({ t }: { t: Dict }) {
                     placeholder="e.g. Dell, Cisco"
                   />
                 </PfField>
+              </div>
+              <div style={{ marginTop: 14 }}>
                 <PfField id="pr-category" label="Category" required>
-                  <select
+                  <CategoryTreePicker
                     id="pr-category"
-                    className="pf-select"
                     value={form.category}
-                    onChange={(e) => setField("category", e.target.value)}
+                    onChange={(slug) => setField("category", slug)}
+                    categories={categories}
                     disabled={busy}
-                  >
-                    {categories.length === 0 && <option value="">— no categories —</option>}
-                    {categories.map((c) => (
-                      <option key={c.slug} value={c.slug}>
-                        {c.nameEN}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </PfField>
               </div>
 

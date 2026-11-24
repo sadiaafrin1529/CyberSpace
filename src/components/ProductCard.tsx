@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import type { PublicProduct, CategoryId } from "@/data/catalog";
 import { formatPrice } from "@/lib/format";
 import { useLang } from "@/lib/useLang";
@@ -12,9 +13,15 @@ export function StockBadge({ stock }: { stock: number | null }) {
   const { t } = useLang();
   if (stock === null) return null;
   return stock > 0 ? (
-    <span className="stock stock--in">{t.common.inStock}</span>
+    <span className="stock stock--in">
+      <i aria-hidden="true" />
+      {t.common.inStock}
+    </span>
   ) : (
-    <span className="stock stock--out">{t.common.outOfStock}</span>
+    <span className="stock stock--out">
+      <i aria-hidden="true" />
+      {t.common.outOfStock}
+    </span>
   );
 }
 
@@ -40,11 +47,12 @@ export default function ProductCard({
     <article className={`pcard${view === "list" ? " pcard--list" : ""}`}>
       <Link href={href} className="pcard__media" tabIndex={-1} aria-hidden="true">
         {product.imageUrl ? (
-          <img src={product.imageUrl} alt={displayName} className="pimg" />
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={product.imageUrl} alt={displayName} className="pimg" loading="lazy" />
         ) : (
           <ProductImage category={product.category as CategoryId} label={displayName} />
         )}
-        <span className="pcard__brand">{product.brand}</span>
+        {product.brand && <span className="pcard__brand">{product.brand}</span>}
       </Link>
       <div className="pcard__body">
         <h3 className="pcard__name">
@@ -53,19 +61,22 @@ export default function ProductCard({
           </Link>
         </h3>
         <p className="pcard__sku">
-          {t.common.partNo}: {product.sku}
+          <span>{t.common.partNo}</span> {product.sku}
         </p>
-        <div className="pcard__meta">
-          <StockBadge stock={product.stock} />
-          <PriceText product={product} />
+        <div className="pcard__foot">
+          <div className="pcard__meta">
+            <PriceText product={product} />
+            <StockBadge stock={product.stock} />
+          </div>
+          <button
+            type="button"
+            className="pcard__cta"
+            onClick={() => dispatch(openInquiry(product.id))}
+          >
+            {t.common.contactMe}
+            <ArrowRight size={16} aria-hidden="true" />
+          </button>
         </div>
-        <button
-          type="button"
-          className="btn btn--primary btn--block"
-          onClick={() => dispatch(openInquiry(product.id))}
-        >
-          {t.common.contactMe}
-        </button>
       </div>
     </article>
   );

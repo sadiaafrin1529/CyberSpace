@@ -2,16 +2,17 @@ import Link from "next/link";
 import { getDict, type Locale } from "@/lib/i18n";
 import Logo from "./Logo";
 
+// About Us and Contact Us lead the list; the address block sits right under it.
 const LINKS = [
-  ["home", ""],
   ["about", "/about"],
+  ["contact", "/contact"],
+  ["home", ""],
   ["team", "/team"],
   ["products", "/shop"],
   ["solutions", "/solutions"],
   ["projects", "/projects"],
   ["news", "/news"],
   ["careers", "/careers"],
-  ["contact", "/contact"],
 ] as const;
 
 export default function Footer({ lang }: { lang: Locale }) {
@@ -28,14 +29,13 @@ export default function Footer({ lang }: { lang: Locale }) {
           <ul className="footer__list">
             {LINKS.map(([key, href]) => (
               <li key={key}>
-                <Link href={`/${lang}${href}`}>{t.nav[key]}</Link>
+                <Link href={`/${lang}${href}`}>
+                  {key === "about" ? t.footer.aboutUs : key === "contact" ? t.footer.contactUs : t.nav[key]}
+                </Link>
               </li>
             ))}
           </ul>
-        </div>
-        <div>
-          <h2 className="footer__h">{t.footer.contact}</h2>
-          <p className="footer__about">
+          <p className="footer__about footer__addr">
             Cyberspace.az
             <br />
             {t.footer.address}

@@ -4,6 +4,7 @@ import { tagTypes } from "@/redux/TagTypes";
 export interface Category {
   id: number;
   slug: string;
+  parentId: number | null;
   nameAZ: string;
   nameEN: string;
   nameRU: string;
@@ -16,6 +17,8 @@ export interface Category {
 
 export interface CreateCategoryInput {
   slug: string;
+  /** null / omitted = root category. */
+  parentId?: number | null;
   nameAZ: string;
   nameEN: string;
   nameRU: string;

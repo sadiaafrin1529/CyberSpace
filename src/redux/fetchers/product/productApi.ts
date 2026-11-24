@@ -47,6 +47,46 @@ function toPublicProduct(p: ApiProduct): PublicProduct {
   };
 }
 
+export type ShopSort = "relevance" | "nameAsc" | "priceAsc" | "priceDesc";
+
+export interface ShopQueryArgs {
+  /** Category slugs; descendants of each are matched automatically (server-side). */
+  category: string[];
+  brand: string[];
+  q: string;
+  minPrice: number | null;
+  maxPrice: number | null;
+  sort: ShopSort;
+  page: number;
+  limit: number;
+  lang: "EN" | "AZ" | "RU";
+}
+
+export interface ShopResult {
+  items: PublicProduct[];
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  facets: {
+    /** Matching products per category slug (other filters applied, category filter ignored). */
+    categories: Record<string, number>;
+    brands: Record<string, number>;
+    price: { min: number; max: number } | null;
+  };
+}
+
+interface ShopResponse {
+  data?: ApiProduct[];
+  meta?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    facets: ShopResult["facets"];
+  };
+}
+
 export interface CreateProductInput {
   sku: string;
   brand?: string;
@@ -66,6 +106,30 @@ export const productApi = baseApi.injectEndpoints({
       query: () => "/products",
       providesTags: [tagTypes.product],
       transformResponse: (res: { data?: ApiProduct[] }) => (res.data ?? []).map(toPublicProduct),
+    }),
+    getShopProducts: builder.query<ShopResult, ShopQueryArgs>({
+      query: (a) => {
+        const p = new URLSearchParams();
+        if (a.category.length) p.set("category", a.category.join(","));
+        if (a.brand.length) p.set("brand", a.brand.join(","));
+        if (a.q) p.set("q", a.q);
+        if (a.minPrice !== null) p.set("minPrice", String(a.minPrice));
+        if (a.maxPrice !== null) p.set("maxPrice", String(a.maxPrice));
+        p.set("sort", a.sort);
+        p.set("page", String(a.page));
+        p.set("limit", String(a.limit));
+        p.set("lang", a.lang);
+        return `/products/shop?${p.toString()}`;
+      },
+      providesTags: [tagTypes.product, tagTypes.category],
+      transformResponse: (res: ShopResponse): ShopResult => ({
+        items: (res.data ?? []).map(toPublicProduct),
+        page: res.meta?.page ?? 1,
+        limit: res.meta?.limit ?? 12,
+        total: res.meta?.total ?? 0,
+        totalPages: res.meta?.totalPages ?? 1,
+        facets: res.meta?.facets ?? { categories: {}, brands: {}, price: null },
+      }),
     }),
     createProduct: builder.mutation<ApiProduct, CreateProductInput>({
       query: (body) => ({ url: "/products", method: "POST", body }),
@@ -90,6 +154,7 @@ export const productApi = baseApi.injectEndpoints({
 
 export const {
   useGetProductsQuery,
+  useGetShopProductsQuery,
   useCreateProductMutation,
   useUpdateProductMutation,
   useDeleteProductMutation,

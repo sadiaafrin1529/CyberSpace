@@ -8,6 +8,10 @@ function decodeJwtRole(token: string): "ADMIN" | "SALES" | null {
     const payload = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
     const padded = payload + "=".repeat((4 - (payload.length % 4)) % 4);
     const decoded = JSON.parse(atob(padded));
+    // Must match getServerSession(): an expired token counts as logged out, otherwise
+    // middleware (dashboard) and layout (login) redirect to each other forever.
+    if (decoded.exp && decoded.exp * 1000 < Date.now()) return null;
+    if (!decoded.id || !decoded.email) return null;
     return decoded.role ?? null;
   } catch {
     return null;

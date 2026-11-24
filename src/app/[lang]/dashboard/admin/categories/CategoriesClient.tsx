@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   useGetCategoriesQuery,
   useCreateCategoryMutation,
@@ -9,11 +9,19 @@ import {
   type Category,
   type CreateCategoryInput,
 } from "@/redux/fetchers/category/categoryApi";
+import { buildTree, flattenTree, subtreeIds, type CategoryNode } from "@/lib/categoryTree";
 import ImageUpload from "@/components/dashboard/ImageUpload";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Layers } from "lucide-react";
+import { ChevronRight, Layers, MoreHorizontal } from "lucide-react";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -27,6 +35,7 @@ import {
 import type { Dict } from "@/lib/i18n";
 
 interface FormState {
+  parentId: string; // "" = root
   slug: string;
   nameEN: string;
   nameAZ: string;
@@ -36,7 +45,8 @@ interface FormState {
   order: string;
 }
 
-const emptyForm = (): FormState => ({
+const emptyForm = (parentId = ""): FormState => ({
+  parentId,
   slug: "",
   nameEN: "",
   nameAZ: "",
@@ -48,6 +58,7 @@ const emptyForm = (): FormState => ({
 
 function categoryToForm(c: Category): FormState {
   return {
+    parentId: c.parentId == null ? "" : String(c.parentId),
     slug: c.slug,
     nameEN: c.nameEN,
     nameAZ: c.nameAZ,
@@ -60,15 +71,19 @@ function categoryToForm(c: Category): FormState {
 
 function formToPayload(f: FormState): CreateCategoryInput {
   return {
+    parentId: f.parentId ? Number(f.parentId) : null,
     slug: f.slug.trim().toLowerCase().replace(/\s+/g, "-"),
     nameEN: f.nameEN.trim(),
     nameAZ: f.nameAZ.trim(),
     nameRU: f.nameRU.trim(),
     imageUrl: f.imageUrl.trim() || null,
     isActive: f.isActive,
-    order: f.order ? parseInt(f.order) : 0,
+    order: f.order ? parseInt(f.order, 10) : 0,
   };
 }
+
+const errMsg = (err: unknown, fallback: string) =>
+  (err as { data?: { message?: string } })?.data?.message ?? fallback;
 
 export default function CategoriesClient({ t }: { t: Dict }) {
   const { data: categories = [], isLoading } = useGetCategoriesQuery();
@@ -76,21 +91,77 @@ export default function CategoriesClient({ t }: { t: Dict }) {
   const [update, { isLoading: updating }] = useUpdateCategoryMutation();
   const [deleteCategory, { isLoading: deleting }] = useDeleteCategoryMutation();
 
+  const tree = useMemo(() => buildTree(categories), [categories]);
+  const nodeById = useMemo(
+    () => new Map(flattenTree(tree).map(({ node }) => [node.id, node])),
+    [tree],
+  );
+
+  const [expanded, setExpanded] = useState<Set<number>>(new Set());
+  const [search, setSearch] = useState("");
+
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Category | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm());
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [listError, setListError] = useState("");
 
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [pendingDeleteId, setPendingDeleteId] = useState<number | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<Category | null>(null);
 
-  function openCreate() {
+  // While searching: keep matches plus their ancestors, and show everything expanded.
+  const query = search.trim().toLowerCase();
+  const visibleIds = useMemo(() => {
+    if (!query) return null;
+    const keep = new Set<number>();
+    for (const c of categories) {
+      const hit = [c.slug, c.nameEN, c.nameAZ, c.nameRU].some((v) =>
+        v.toLowerCase().includes(query),
+      );
+      if (!hit) continue;
+      for (let cur: Category | undefined = c; cur && !keep.has(cur.id);) {
+        keep.add(cur.id);
+        cur = cur.parentId == null ? undefined : nodeById.get(cur.parentId);
+      }
+    }
+    return keep;
+  }, [query, categories, nodeById]);
+
+  // Parent choices: every category except the one being edited and its descendants (no cycles).
+  const parentOptions = useMemo(() => {
+    const self = editing ? nodeById.get(editing.id) : undefined;
+    const blocked = new Set(self ? subtreeIds(self) : editing ? [editing.id] : []);
+    return flattenTree(tree).filter(({ node }) => !blocked.has(node.id));
+  }, [tree, nodeById, editing]);
+
+  function toggle(id: number) {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+  function expandAll() {
+    setExpanded(
+      new Set(
+        flattenTree(tree)
+          .filter(({ node }) => node.children.length)
+          .map(({ node }) => node.id),
+      ),
+    );
+  }
+  function collapseAll() {
+    setExpanded(new Set());
+  }
+
+  function openCreate(parentId?: number) {
     setEditing(null);
-    setForm(emptyForm());
+    setForm(emptyForm(parentId ? String(parentId) : ""));
     setError("");
     setSuccess("");
     setOpen(true);
+    if (parentId) setExpanded((prev) => new Set(prev).add(parentId));
   }
   function openEdit(c: Category) {
     setEditing(c);
@@ -105,7 +176,6 @@ export default function CategoriesClient({ t }: { t: Dict }) {
       setEditing(null);
     }
   }
-
   function setField<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
@@ -113,14 +183,8 @@ export default function CategoriesClient({ t }: { t: Dict }) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    if (!form.slug.trim()) {
-      setError("Slug is required.");
-      return;
-    }
-    if (!form.nameEN.trim()) {
-      setError("English name is required.");
-      return;
-    }
+    if (!form.slug.trim()) return setError("Slug is required.");
+    if (!form.nameEN.trim()) return setError("English name is required.");
     try {
       const payload = formToPayload(form);
       if (editing) {
@@ -134,196 +198,177 @@ export default function CategoriesClient({ t }: { t: Dict }) {
         setSuccess("");
         setOpen(false);
         setEditing(null);
-      }, 1200);
+      }, 900);
     } catch (err: unknown) {
-      const msg = (err as { data?: { message?: string } })?.data?.message;
-      setError(msg ?? "Save failed. Please try again.");
+      setError(errMsg(err, "Save failed. Please try again."));
     }
   }
 
-  function promptDelete(id: number) {
-    setPendingDeleteId(id);
-    setConfirmOpen(true);
+  async function toggleActive(c: Category) {
+    setListError("");
+    try {
+      await update({ id: c.id, body: { isActive: !c.isActive } }).unwrap();
+    } catch (err) {
+      setListError(errMsg(err, "Update failed."));
+    }
   }
 
   async function handleConfirmDelete() {
-    if (pendingDeleteId == null) return;
+    if (!pendingDelete) return;
+    setListError("");
     try {
-      await deleteCategory(pendingDeleteId).unwrap();
-      setConfirmOpen(false);
-      setPendingDeleteId(null);
-    } catch {
-      setConfirmOpen(false);
+      await deleteCategory(pendingDelete.id).unwrap();
+    } catch (err) {
+      setListError(errMsg(err, "Delete failed."));
     }
+    setPendingDelete(null);
+  }
+
+  function renderNode(n: CategoryNode): React.ReactNode {
+    if (visibleIds && !visibleIds.has(n.id)) return null;
+    const hasKids = n.children.length > 0;
+    const isOpen = visibleIds ? true : expanded.has(n.id);
+    return (
+      <li key={n.id} className="ctree__item">
+        <div className={`ctree__row${n.isActive ? "" : " is-off"}`}>
+          <button
+            type="button"
+            className={`ctree__chev${hasKids ? "" : " is-leaf"}${isOpen ? " is-open" : ""}`}
+            onClick={() => hasKids && toggle(n.id)}
+            aria-label={isOpen ? "Collapse" : "Expand"}
+            aria-expanded={hasKids ? isOpen : undefined}
+            tabIndex={hasKids ? 0 : -1}
+          >
+            <ChevronRight size={16} />
+          </button>
+          {n.imageUrl ? (
+            <img src={n.imageUrl} alt="" className="ctree__thumb" />
+          ) : (
+            <div className="ctree__thumb ctree__thumb--empty" aria-hidden="true">
+              <Layers size={14} />
+            </div>
+          )}
+          <div className="ctree__main">
+            <span className="ctree__name">{n.nameEN}</span>
+            <span className="ctree__sub">
+              {[n.nameAZ, n.nameRU].filter(Boolean).join(" · ")}
+              {hasKids && <span className="ctree__count"> · {n.children.length} sub</span>}
+            </span>
+          </div>
+          <code className="dash-code ctree__slug">{n.slug}</code>
+          <span className="ctree__order" title="Display order">
+            #{n.order}
+          </span>
+          <button
+            type="button"
+            className={`status-badge ${n.isActive ? "status-badge--ok" : "status-badge--off"}`}
+            style={{ cursor: "pointer", border: 0 }}
+            onClick={() => toggleActive(n)}
+            disabled={updating}
+            title="Click to toggle"
+          >
+            {n.isActive ? "Active" : "Off"}
+          </button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button type="button" className="ctree__menu" aria-label={`Actions for ${n.nameEN}`}>
+                <MoreHorizontal size={18} />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onSelect={() => openCreate(n.id)}>Add subcategory</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => openEdit(n)}>
+                {t.dash.edit ?? "Edit"}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onSelect={() => setPendingDelete(n)}>
+                {t.dash.delete ?? "Delete"}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        {hasKids && isOpen && <ul className="ctree__children">{n.children.map(renderNode)}</ul>}
+      </li>
+    );
   }
 
   const busy = creating || updating;
+  const parentNode = form.parentId ? nodeById.get(Number(form.parentId)) : null;
 
   return (
     <div>
       <div className="dash-page-header">
         <div>
           <h1 className="dash-page-title">{t.dash.categories ?? "Categories"}</h1>
-          <p className="dash-page-sub">Manage product categories and their multilingual names.</p>
+          <p className="dash-page-sub">
+            Organize categories as a tree with unlimited nesting. Names are multilingual.
+          </p>
         </div>
-        <Button type="button" size="sm" onClick={openCreate} style={{ flexShrink: 0 }}>
-          + {t.dash.add ?? "Add Category"}
+        <Button type="button" size="sm" onClick={() => openCreate()} style={{ flexShrink: 0 }}>
+          + Add Category
         </Button>
       </div>
 
+      <div className="dash-toolbar">
+        <input
+          className="dash-search"
+          type="search"
+          placeholder="Search name or slug…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          aria-label="Search categories"
+        />
+        <div className="dash-filters">
+          <button type="button" className="dash-filter-btn" onClick={expandAll}>
+            Expand all
+          </button>
+          <button type="button" className="dash-filter-btn" onClick={collapseAll}>
+            Collapse all
+          </button>
+        </div>
+      </div>
+
+      {listError && (
+        <p className="pf-alert pf-alert--error" role="alert">
+          {listError}
+        </p>
+      )}
+
       {isLoading ? (
-        <div className="dash-table-wrap">
-          <table className="dash-table">
-            <thead>
-              <tr>
-                <th>Image</th>
-                <th>Slug</th>
-                <th>EN</th>
-                <th>AZ</th>
-                <th>RU</th>
-                <th>Order</th>
-                <th>Active</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Array.from({ length: 4 }).map((_, i) => (
-                <tr key={i}>
-                  <td>
-                    <span className="skel skel--thumb" />
-                  </td>
-                  <td>
-                    <span className="skel skel--md" style={{ width: 80 }} />
-                  </td>
-                  <td>
-                    <span className="skel skel--md" style={{ width: "70%" }} />
-                  </td>
-                  <td>
-                    <span className="skel skel--sm" style={{ width: "60%" }} />
-                  </td>
-                  <td>
-                    <span className="skel skel--sm" style={{ width: "60%" }} />
-                  </td>
-                  <td>
-                    <span className="skel skel--sm" style={{ width: 24 }} />
-                  </td>
-                  <td>
-                    <span className="skel skel--badge" />
-                  </td>
-                  <td>
-                    <span className="skel skel--badge" />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="ctree">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="ctree__row">
+              <span className="skel skel--thumb" />
+              <span className="skel skel--md" style={{ width: "40%" }} />
+            </div>
+          ))}
         </div>
       ) : categories.length === 0 ? (
         <div className="dash-empty">
-          <svg
-            viewBox="0 0 24 24"
-            width="36"
-            height="36"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            style={{ opacity: 0.3 }}
-          >
-            <path d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-          </svg>
           <p>{t.dash.noData}</p>
           <Button
             type="button"
             size="sm"
             variant="outline"
             className="dash-empty__cta"
-            onClick={openCreate}
+            onClick={() => openCreate()}
           >
-            {t.dash.add ?? "Add Category"}
+            + Add Category
           </Button>
         </div>
-      ) : (
-        <div className="dash-table-wrap">
-          <table className="dash-table">
-            <thead>
-              <tr>
-                <th>Image</th>
-                <th>Slug</th>
-                <th>EN</th>
-                <th>AZ</th>
-                <th>RU</th>
-                <th>{t.dash.formOrder ?? "Order"}</th>
-                <th>{t.dash.formActive ?? "Active"}</th>
-                <th>{t.dash.actions}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {categories.map((c) => (
-                <tr key={c.id}>
-                  <td>
-                    {c.imageUrl ? (
-                      <img src={c.imageUrl} alt={c.nameEN} className="dash-thumb" />
-                    ) : (
-                      <div className="dash-thumb-placeholder">
-                        <svg
-                          viewBox="0 0 24 24"
-                          width="14"
-                          height="14"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                        >
-                          <rect x="3" y="3" width="18" height="18" rx="2" />
-                          <circle cx="8.5" cy="8.5" r="1.5" />
-                          <polyline points="21 15 16 10 5 21" />
-                        </svg>
-                      </div>
-                    )}
-                  </td>
-                  <td>
-                    <code className="dash-code">{c.slug}</code>
-                  </td>
-                  <td>{c.nameEN}</td>
-                  <td>{c.nameAZ}</td>
-                  <td>{c.nameRU}</td>
-                  <td>{c.order}</td>
-                  <td>
-                    <span
-                      className={`status-badge ${c.isActive ? "status-badge--ok" : "status-badge--off"}`}
-                    >
-                      {c.isActive ? "Active" : "Off"}
-                    </span>
-                  </td>
-                  <td>
-                    <div className="dash-actions">
-                      <Button type="button" variant="outline" size="sm" onClick={() => openEdit(c)}>
-                        {t.dash.edit ?? "Edit"}
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="sm"
-                        disabled={deleting}
-                        onClick={() => promptDelete(c.id)}
-                      >
-                        {t.dash.delete ?? "Delete"}
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      ) : visibleIds && visibleIds.size === 0 ? (
+        <div className="dash-empty">
+          <p>No categories match “{search}”.</p>
         </div>
+      ) : (
+        <ul className="ctree">{tree.map(renderNode)}</ul>
       )}
 
-      {/* Delete confirmation */}
       <ConfirmDialog
-        open={confirmOpen}
-        onOpenChange={setConfirmOpen}
-        title="Delete this category?"
-        description="This action cannot be undone."
+        open={pendingDelete !== null}
+        onOpenChange={(v) => !v && setPendingDelete(null)}
+        title={`Delete “${pendingDelete?.nameEN ?? ""}”?`}
+        description="This action cannot be undone. A category that still has subcategories cannot be deleted."
         confirmText="Delete"
         onConfirm={handleConfirmDelete}
         loading={deleting}
@@ -338,11 +383,12 @@ export default function CategoriesClient({ t }: { t: Dict }) {
               </div>
               <div>
                 <DialogTitle>
-                  {editing ? (t.dash.edit ?? "Edit") : (t.dash.add ?? "Add")}{" "}
-                  {t.dash.categories ?? "Category"}
+                  {editing ? "Edit category" : parentNode ? "Add subcategory" : "Add category"}
                 </DialogTitle>
                 <DialogDescription>
-                  Set slug, multilingual names, image and sort order.
+                  {parentNode && !editing
+                    ? `Inside “${parentNode.nameEN}”.`
+                    : "Set parent, slug, multilingual names, image and sort order."}
                 </DialogDescription>
               </div>
             </div>
@@ -358,65 +404,69 @@ export default function CategoriesClient({ t }: { t: Dict }) {
               {success && <p className="pf-alert pf-alert--success">{success}</p>}
 
               <div className="pf-field" style={{ marginBottom: 12 }}>
+                <label htmlFor="cat-parent" className="pf-label">
+                  Parent category
+                </label>
+                <select
+                  id="cat-parent"
+                  className="pf-input"
+                  value={form.parentId}
+                  onChange={(e) => setField("parentId", e.target.value)}
+                  disabled={busy}
+                >
+                  <option value="">— None (top level) —</option>
+                  {parentOptions.map(({ node, depth }) => (
+                    <option key={node.id} value={node.id}>
+                      {"  ".repeat(depth)}
+                      {depth > 0 ? "↳ " : ""}
+                      {node.nameEN}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="pf-field" style={{ marginBottom: 12 }}>
                 <label htmlFor="cat-slug" className="pf-label">
                   Slug *{" "}
                   <span
                     style={{ fontWeight: 400, fontSize: ".72rem", color: "#8899aa", marginLeft: 4 }}
                   >
-                    (auto-lowercased, spaces→hyphens)
+                    (unique across all categories; products reference it)
                   </span>
                 </label>
                 <Input
                   id="cat-slug"
                   value={form.slug}
                   onChange={(e) => setField("slug", e.target.value)}
-                  disabled={busy || !!editing}
-                  maxLength={60}
-                  placeholder="e.g. servers"
+                  disabled={busy}
+                  maxLength={80}
+                  placeholder="e.g. rack-servers"
                   className="pf-input"
                 />
               </div>
 
               <div className="pf-grid-3" style={{ marginBottom: 12 }}>
-                <div className="pf-field">
-                  <label htmlFor="cat-en" className="pf-label">
-                    Name EN *
-                  </label>
-                  <Input
-                    id="cat-en"
-                    value={form.nameEN}
-                    onChange={(e) => setField("nameEN", e.target.value)}
-                    disabled={busy}
-                    maxLength={100}
-                    className="pf-input"
-                  />
-                </div>
-                <div className="pf-field">
-                  <label htmlFor="cat-az" className="pf-label">
-                    Name AZ
-                  </label>
-                  <Input
-                    id="cat-az"
-                    value={form.nameAZ}
-                    onChange={(e) => setField("nameAZ", e.target.value)}
-                    disabled={busy}
-                    maxLength={100}
-                    className="pf-input"
-                  />
-                </div>
-                <div className="pf-field">
-                  <label htmlFor="cat-ru" className="pf-label">
-                    Name RU
-                  </label>
-                  <Input
-                    id="cat-ru"
-                    value={form.nameRU}
-                    onChange={(e) => setField("nameRU", e.target.value)}
-                    disabled={busy}
-                    maxLength={100}
-                    className="pf-input"
-                  />
-                </div>
+                {(
+                  [
+                    ["nameEN", "Name EN *"],
+                    ["nameAZ", "Name AZ"],
+                    ["nameRU", "Name RU"],
+                  ] as const
+                ).map(([key, label]) => (
+                  <div className="pf-field" key={key}>
+                    <label htmlFor={`cat-${key}`} className="pf-label">
+                      {label}
+                    </label>
+                    <Input
+                      id={`cat-${key}`}
+                      value={form[key]}
+                      onChange={(e) => setField(key, e.target.value)}
+                      disabled={busy}
+                      maxLength={100}
+                      className="pf-input"
+                    />
+                  </div>
+                ))}
               </div>
 
               <ImageUpload
@@ -466,7 +516,7 @@ export default function CategoriesClient({ t }: { t: Dict }) {
                 Cancel
               </Button>
               <Button type="submit" form="category-form" disabled={busy}>
-                {busy ? "Saving…" : editing ? t.dash.save : "Create Category"}
+                {busy ? "Saving…" : editing ? t.dash.save : "Create"}
               </Button>
             </DialogFooter>
           </DialogForm>
