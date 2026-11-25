@@ -11,6 +11,7 @@ export const tagTypes = {
   project: "project",
   projectCategory: "projectCategory",
   solution: "solution",
+  apiKey: "apiKey",
 } as const;
 
 export type TagType = (typeof tagTypes)[keyof typeof tagTypes];

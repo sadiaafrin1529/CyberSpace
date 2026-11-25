@@ -12,7 +12,7 @@ export default async function AdminSettingsPage({ params }: { params: Promise<{ 
       <div className="dash-page-header">
         <div>
           <h1 className="dash-page-title">{t.dash.settings}</h1>
-          <p className="dash-page-sub">Control what information is visible on the public site.</p>
+          <p className="dash-page-sub">Control what is visible on the public site and manage Developer API access.</p>
         </div>
       </div>
       <SettingsClient t={t} />
